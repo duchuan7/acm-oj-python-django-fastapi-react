@@ -1,0 +1,86 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: acmoj-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-acmoj}
+      POSTGRES_USER: ${POSTGRES_USER:-acmoj}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-acmoj_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-acmoj} -d ${POSTGRES_DB:-acmoj}"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: acmoj-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+  backend:
+    build:
+      context: ./backend
+    container_name: acmoj-backend
+    env_file:
+      - .env.example
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+      - testcase_data:/data/testcases
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed_demo --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  judge:
+    build:
+      context: ./judge
+    container_name: acmoj-judge
+    env_file:
+      - .env.example
+    depends_on:
+      - backend
+      - redis
+    volumes:
+      - ./judge:/app
+      - testcase_data:/data/testcases:ro
+      - judge_runs:/judge/run
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: ["python", "worker.py"]
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: acmoj-frontend
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+
+volumes:
+  postgres_data:
+    name: acmoj_postgres_data
+  redis_data:
+    name: acmoj_redis_data
+  testcase_data:
+    name: acmoj_testcase_data
+  judge_runs:
+    name: acmoj_judge_runs
