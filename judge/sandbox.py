@@ -40,16 +40,18 @@ RUNS_ROOT = Path(os.getenv("JUDGE_RUNS_ROOT", "/judge/run"))
 RUNS_VOLUME = os.getenv("JUDGE_RUNS_VOLUME", "acmoj_judge_runs")
 TESTCASE_VOLUME = os.getenv("TESTCASE_VOLUME", "acmoj_testcase_data")
 TESTCASE_ROOT = Path("/data/testcases")
+OUTPUT_LIMIT_BYTES = int(os.getenv("JUDGE_OUTPUT_LIMIT_BYTES", str(16 * 1024 * 1024)))
 
 
 class ContainerResult:
-    def __init__(self, exit_code, stdout="", stderr="", time_ms=0, memory_kb=0, timed_out=False):
+    def __init__(self, exit_code, stdout="", stderr="", time_ms=0, memory_kb=0, timed_out=False, output_exceeded=False):
         self.exit_code = exit_code
         self.stdout = stdout
         self.stderr = stderr
         self.time_ms = time_ms
         self.memory_kb = memory_kb
         self.timed_out = timed_out
+        self.output_exceeded = output_exceeded
         self.memory_exceeded = exit_code == 137
 
 
@@ -95,15 +97,19 @@ def judge_submission(submission):
             case_results.append(
                 {
                     "test_case_id": case["id"],
+                    "status": verdict,
                     "verdict": verdict,
+                    "time_used": run_result.time_ms,
                     "time_ms": run_result.time_ms,
+                    "memory_used": run_result.memory_kb,
                     "memory_kb": run_result.memory_kb,
-                    "score": case["score"] if verdict == "AC" else 0,
+                    "exit_code": run_result.exit_code,
+                    "stdout": read_limited(stdout_file, 4000),
+                    "stderr": run_result.stderr[:4000],
+                    "score": case["score"] if verdict == "ACCEPTED" else 0,
                     "message": message,
                 }
             )
-            if verdict != "AC" and submission.get("contest_rule") == "ACM":
-                break
 
         return aggregate_case_results(case_results)
     finally:
@@ -156,6 +162,7 @@ def run_container(image, command, workdir, timeout_seconds, memory_mb, stdin_fil
         container.remove(force=True)
 
     memory_kb = int(stats.get("memory_stats", {}).get("max_usage", 0) / 1024)
+    output_exceeded = bool(stdout_file and Path(stdout_file).exists() and Path(stdout_file).stat().st_size > OUTPUT_LIMIT_BYTES)
     return ContainerResult(
         exit_code=exit_code,
         stdout=logs,
@@ -163,6 +170,7 @@ def run_container(image, command, workdir, timeout_seconds, memory_mb, stdin_fil
         time_ms=elapsed_ms,
         memory_kb=memory_kb,
         timed_out=timed_out,
+        output_exceeded=output_exceeded,
     )
 
 
@@ -171,12 +179,14 @@ def verdict_for_case(run_result, actual_file, expected_file):
         return "TIME_LIMIT_EXCEEDED", "Process exceeded time limit."
     if run_result.memory_exceeded:
         return "MEMORY_LIMIT_EXCEEDED", "Process exceeded memory limit."
+    if run_result.output_exceeded:
+        return "OUTPUT_LIMIT_EXCEEDED", "Process exceeded output limit."
     if run_result.exit_code != 0:
         return "RUNTIME_ERROR", run_result.stderr[:1000]
     ok, diff = compare_output(actual_file, expected_file)
     if not ok:
         return "WRONG_ANSWER", diff[:1000]
-    return "AC", ""
+    return "ACCEPTED", ""
 
 
 def compare_output(actual_file, expected_file):
@@ -210,16 +220,16 @@ def normalize_output(text):
 def aggregate_case_results(case_results):
     if not case_results:
         return final_result("SYSTEM_ERROR", compile_message="No test cases configured.")
-    verdict = "AC"
+    verdict = "ACCEPTED"
     for item in case_results:
-        if item["verdict"] != "AC":
+        if item["verdict"] != "ACCEPTED":
             verdict = item["verdict"]
             break
     return {
         "verdict": verdict,
         "score": sum(item.get("score", 0) for item in case_results),
-        "max_time_ms": max(item.get("time_ms", 0) for item in case_results),
-        "max_memory_kb": max(item.get("memory_kb", 0) for item in case_results),
+        "max_time_ms": max(item.get("time_used", item.get("time_ms", 0)) for item in case_results),
+        "max_memory_kb": max(item.get("memory_used", item.get("memory_kb", 0)) for item in case_results),
         "compile_message": "",
         "case_results": case_results,
     }
@@ -233,6 +243,15 @@ def create_isolated_workdir(submission_id):
 
 def write_source_file(workdir, filename, code):
     (workdir / filename).write_text(code, encoding="utf-8")
+
+
+def read_limited(path, limit):
+    path = Path(path)
+    if not path.exists():
+        return ""
+    with path.open("rb") as handle:
+        data = handle.read(limit)
+    return data.decode("utf-8", errors="replace")
 
 
 def final_result(verdict, compile_message=""):

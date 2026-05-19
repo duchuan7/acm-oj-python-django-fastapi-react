@@ -5,9 +5,22 @@ User = get_user_model()
 
 
 class UserSerializer(serializers.ModelSerializer):
+    is_online = serializers.BooleanField(read_only=True)
+
     class Meta:
         model = User
-        fields = ["id", "username", "email", "role", "school", "real_name", "is_staff"]
+        fields = [
+            "id",
+            "username",
+            "email",
+            "role",
+            "school",
+            "real_name",
+            "is_staff",
+            "date_joined",
+            "last_seen_at",
+            "is_online",
+        ]
         read_only_fields = ["id", "is_staff"]
 
 

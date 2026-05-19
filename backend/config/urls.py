@@ -7,7 +7,7 @@ from rest_framework.views import APIView
 from apps.accounts.views import AuthViewSet, UserViewSet
 from apps.contests.views import ContestViewSet
 from apps.blogs.views import BlogPostViewSet
-from apps.problems.views import ProblemProposalViewSet, ProblemViewSet
+from apps.problems.views import ProblemProposalViewSet, ProblemSolutionViewSet, ProblemViewSet
 from apps.submissions.views import InternalJudgeViewSet, SubmissionViewSet
 
 
@@ -18,8 +18,8 @@ class ApiRootView(APIView):
     def get(self, request):
         return Response(
             {
-                "name": "ACM Training OJ",
-                "modules": ["accounts", "problems", "problem-proposals", "submissions", "contests", "ranklist", "blogs"],
+                "name": "duilio OJ",
+                "modules": ["accounts", "problems", "problem-proposals", "problem-solutions", "submissions", "contests", "ranklist", "blogs"],
             }
         )
 
@@ -29,6 +29,7 @@ router.register("auth", AuthViewSet, basename="auth")
 router.register("users", UserViewSet, basename="users")
 router.register("problems", ProblemViewSet, basename="problems")
 router.register("problem-proposals", ProblemProposalViewSet, basename="problem-proposals")
+router.register("problem-solutions", ProblemSolutionViewSet, basename="problem-solutions")
 router.register("submissions", SubmissionViewSet, basename="submissions")
 router.register("contests", ContestViewSet, basename="contests")
 router.register("blogs", BlogPostViewSet, basename="blogs")

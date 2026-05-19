@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from apps.common.permissions import IsCoachOrAdmin
 
-from .models import JudgeCaseResult, Submission
+from .models import Submission, SubmissionCaseResult
 from .serializers import JudgePayloadSerializer, JudgeResultSerializer, SubmissionSerializer
 
 
@@ -18,9 +18,23 @@ class SubmissionViewSet(mixins.CreateModelMixin, mixins.ListModelMixin, mixins.R
     def get_queryset(self):
         qs = Submission.objects.select_related("user", "problem", "contest").prefetch_related("case_results")
         user = self.request.user
+        problem = self.request.query_params.get("problem")
         if user.is_staff or user.role in {"ADMIN", "COACH"}:
-            return qs
-        return qs.filter(user=user)
+            scoped = qs
+        elif problem:
+            scoped = qs
+        else:
+            scoped = qs.filter(user=user)
+
+        language = self.request.query_params.get("language")
+        status_value = self.request.query_params.get("status") or self.request.query_params.get("verdict")
+        if problem:
+            scoped = scoped.filter(problem_id=problem)
+        if language:
+            scoped = scoped.filter(language=language)
+        if status_value:
+            scoped = scoped.filter(verdict=status_value)
+        return scoped
 
 
 class InternalJudgeViewSet(viewsets.GenericViewSet):
@@ -50,7 +64,7 @@ class InternalJudgeViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
 
-        JudgeCaseResult.objects.filter(submission=submission).delete()
+        SubmissionCaseResult.objects.filter(submission=submission).delete()
         submission.verdict = data["verdict"]
         submission.score = data.get("score", 0)
         submission.max_time_ms = data.get("max_time_ms", 0)
@@ -60,12 +74,15 @@ class InternalJudgeViewSet(viewsets.GenericViewSet):
         submission.save()
 
         for item in data.get("case_results", []):
-            JudgeCaseResult.objects.create(
+            SubmissionCaseResult.objects.create(
                 submission=submission,
-                test_case_id=item["test_case_id"],
-                verdict=item["verdict"],
-                time_ms=item.get("time_ms", 0),
-                memory_kb=item.get("memory_kb", 0),
+                case_id=item["test_case_id"],
+                status=item.get("status") or item["verdict"],
+                time_used=item.get("time_used", item.get("time_ms", 0)),
+                memory_used=item.get("memory_used", item.get("memory_kb", 0)),
+                exit_code=item.get("exit_code"),
+                stdout=item.get("stdout", ""),
+                stderr=item.get("stderr", ""),
                 score=item.get("score", 0),
                 message=item.get("message", ""),
             )

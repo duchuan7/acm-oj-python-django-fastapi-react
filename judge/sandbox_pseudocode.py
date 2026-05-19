@@ -89,7 +89,7 @@ def judge_submission(submission):
         elif not compare_output(run_result.stdout_file, case["output_file"]):
             verdict = "WRONG_ANSWER"
         else:
-            verdict = "AC"
+            verdict = "ACCEPTED"
 
         case_results.append(
             {
@@ -97,12 +97,9 @@ def judge_submission(submission):
                 "verdict": verdict,
                 "time_ms": run_result.time_ms,
                 "memory_kb": run_result.memory_kb,
-                "score": case["score"] if verdict == "AC" else 0,
+                "score": case["score"] if verdict == "ACCEPTED" else 0,
             }
         )
-
-        if verdict != "AC" and submission.get("contest_rule") == "ACM":
-            break
 
     return aggregate_case_results(case_results)
 

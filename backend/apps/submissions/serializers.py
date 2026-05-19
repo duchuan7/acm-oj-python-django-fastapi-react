@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 from apps.problems.models import TestCase
 
-from .models import JudgeCaseResult, Submission
+from .models import Submission, SubmissionCaseResult
 from .queue import enqueue_submission
 
 
@@ -14,18 +14,41 @@ def testcase_path(path):
     return f"/data/testcases/{path}"
 
 
-class JudgeCaseResultSerializer(serializers.ModelSerializer):
-    test_case_order = serializers.IntegerField(source="test_case.order", read_only=True)
+class SubmissionCaseResultSerializer(serializers.ModelSerializer):
+    case_order = serializers.IntegerField(source="case.order", read_only=True)
+    verdict = serializers.CharField(source="status", read_only=True)
+    time_ms = serializers.IntegerField(source="time_used", read_only=True)
+    memory_kb = serializers.IntegerField(source="memory_used", read_only=True)
+    test_case = serializers.IntegerField(source="case_id", read_only=True)
+    test_case_order = serializers.IntegerField(source="case.order", read_only=True)
 
     class Meta:
-        model = JudgeCaseResult
-        fields = ["id", "test_case", "test_case_order", "verdict", "time_ms", "memory_kb", "score", "message"]
+        model = SubmissionCaseResult
+        fields = [
+            "id",
+            "case",
+            "case_order",
+            "test_case",
+            "test_case_order",
+            "status",
+            "verdict",
+            "time_used",
+            "time_ms",
+            "memory_used",
+            "memory_kb",
+            "exit_code",
+            "stdout",
+            "stderr",
+            "score",
+            "message",
+            "created_at",
+        ]
 
 
 class SubmissionSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source="user.username", read_only=True)
     problem_title = serializers.CharField(source="problem.title", read_only=True)
-    case_results = JudgeCaseResultSerializer(many=True, read_only=True)
+    case_results = SubmissionCaseResultSerializer(many=True, read_only=True)
 
     class Meta:
         model = Submission
@@ -61,6 +84,9 @@ class SubmissionSerializer(serializers.ModelSerializer):
             "judged_at",
             "case_results",
         ]
+        extra_kwargs = {
+            "code": {"write_only": True},
+        }
 
     def validate_code(self, value):
         size = len(value.encode("utf-8"))

@@ -28,6 +28,7 @@ class ContestProblem(models.Model):
     alias = models.CharField(max_length=8, help_text="A/B/C...")
     score = models.PositiveIntegerField(default=100)
     order = models.PositiveIntegerField()
+    created_for_contest = models.BooleanField(default=False)
 
     class Meta:
         unique_together = [("contest", "problem"), ("contest", "alias")]

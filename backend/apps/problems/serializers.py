@@ -1,7 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import Problem, ProblemProposal, TestCase
+from .models import Problem, ProblemProposal, ProblemSolution, TestCase
 
 
 class TestCaseSerializer(serializers.ModelSerializer):
@@ -137,3 +137,67 @@ class ProblemProposalReviewSerializer(serializers.Serializer):
         proposal.review_message = self.validated_data.get("review_message", "")
         proposal.save()
         return proposal
+
+
+class ProblemSolutionSerializer(serializers.ModelSerializer):
+    author_username = serializers.CharField(source="author.username", read_only=True)
+    problem_title = serializers.CharField(source="problem.title", read_only=True)
+    reviewed_by_username = serializers.CharField(source="reviewed_by.username", read_only=True)
+
+    class Meta:
+        model = ProblemSolution
+        fields = [
+            "id",
+            "problem",
+            "problem_title",
+            "author",
+            "author_username",
+            "title",
+            "content",
+            "status",
+            "review_message",
+            "reviewed_by",
+            "reviewed_by_username",
+            "created_at",
+            "reviewed_at",
+            "updated_at",
+        ]
+        read_only_fields = [
+            "id",
+            "author",
+            "author_username",
+            "status",
+            "review_message",
+            "reviewed_by",
+            "reviewed_by_username",
+            "created_at",
+            "reviewed_at",
+            "updated_at",
+        ]
+
+    def create(self, validated_data):
+        return ProblemSolution.objects.create(author=self.context["request"].user, **validated_data)
+
+
+class ProblemSolutionReviewSerializer(serializers.Serializer):
+    review_message = serializers.CharField(required=False, allow_blank=True)
+
+    def approve(self, solution, reviewer):
+        if solution.status != ProblemSolution.Status.PENDING:
+            raise serializers.ValidationError("Only pending solutions can be approved.")
+        solution.status = ProblemSolution.Status.APPROVED
+        solution.reviewed_by = reviewer
+        solution.reviewed_at = timezone.now()
+        solution.review_message = self.validated_data.get("review_message", "")
+        solution.save()
+        return solution
+
+    def reject(self, solution, reviewer):
+        if solution.status != ProblemSolution.Status.PENDING:
+            raise serializers.ValidationError("Only pending solutions can be rejected.")
+        solution.status = ProblemSolution.Status.REJECTED
+        solution.reviewed_by = reviewer
+        solution.reviewed_at = timezone.now()
+        solution.review_message = self.validated_data.get("review_message", "")
+        solution.save()
+        return solution

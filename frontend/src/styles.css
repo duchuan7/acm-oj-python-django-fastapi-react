@@ -152,6 +152,15 @@ body,
   font-size: 17px;
 }
 
+.username-link.ant-typography {
+  color: inherit;
+  font-weight: inherit;
+}
+
+.username-link.ant-typography:hover {
+  color: #2f6f5e;
+}
+
 .data-table .ant-table {
   border-radius: 8px;
   overflow: hidden;

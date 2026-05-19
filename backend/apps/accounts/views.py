@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import mixins, status, viewsets
-from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -10,6 +10,7 @@ from apps.common.permissions import IsAdminRole
 from apps.blogs.models import BlogPost
 from apps.submissions.models import Submission
 
+from .authentication import LastSeenTokenAuthentication
 from .serializers import (
     BlogProfileSerializer,
     LoginSerializer,
@@ -23,7 +24,7 @@ User = get_user_model()
 
 
 class AuthViewSet(viewsets.GenericViewSet):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [LastSeenTokenAuthentication]
     permission_classes = [AllowAny]
 
     @action(detail=False, methods=["post"], serializer_class=RegisterSerializer)
@@ -31,6 +32,8 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
+        user.last_seen_at = timezone.now()
+        user.save(update_fields=["last_seen_at"])
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "user": UserSerializer(user).data}, status=status.HTTP_201_CREATED)
 
@@ -39,6 +42,8 @@ class AuthViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.validated_data["user"]
+        user.last_seen_at = timezone.now()
+        user.save(update_fields=["last_seen_at"])
         token, _ = Token.objects.get_or_create(user=user)
         return Response({"token": token.key, "user": UserSerializer(user).data})
 
@@ -68,11 +73,22 @@ class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.Updat
         viewer = request.user
         submissions = Submission.objects.filter(user=user).select_related("problem")[:30]
         blogs = BlogPost.objects.filter(author=user).order_by("-created_at")
+        solved_count = (
+            Submission.objects.filter(user=user, verdict=Submission.Verdict.ACCEPTED)
+            .values("problem_id")
+            .distinct()
+            .count()
+        )
+        submission_count = Submission.objects.filter(user=user).count()
         if not (viewer.is_staff or viewer.role in {"ADMIN", "COACH"} or viewer.id == user.id):
             blogs = blogs.filter(status=BlogPost.Status.PUBLISHED)
         return Response(
             {
                 "user": UserSerializer(user).data,
+                "stats": {
+                    "solved_count": solved_count,
+                    "submission_count": submission_count,
+                },
                 "submissions": SubmissionProfileSerializer(submissions, many=True).data,
                 "blogs": BlogProfileSerializer(blogs[:30], many=True).data,
             }

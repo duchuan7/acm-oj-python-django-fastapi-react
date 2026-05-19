@@ -57,6 +57,33 @@ class ProblemProposal(models.Model):
         ordering = ["-created_at"]
 
 
+class ProblemSolution(models.Model):
+    class Status(models.TextChoices):
+        PENDING = "PENDING", "Pending"
+        APPROVED = "APPROVED", "Approved"
+        REJECTED = "REJECTED", "Rejected"
+
+    problem = models.ForeignKey(Problem, related_name="solutions", on_delete=models.CASCADE)
+    author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="problem_solutions", on_delete=models.CASCADE)
+    title = models.CharField(max_length=200)
+    content = models.TextField()
+    status = models.CharField(max_length=16, choices=Status.choices, default=Status.PENDING)
+    review_message = models.TextField(blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        related_name="reviewed_problem_solutions",
+        on_delete=models.SET_NULL,
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+
 class TestCase(models.Model):
     problem = models.ForeignKey(Problem, related_name="test_cases", on_delete=models.CASCADE)
     order = models.PositiveIntegerField()

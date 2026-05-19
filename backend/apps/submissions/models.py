@@ -12,12 +12,13 @@ class Submission(models.Model):
     class Verdict(models.TextChoices):
         PENDING = "PENDING", "Pending"
         JUDGING = "JUDGING", "Judging"
-        AC = "AC", "Accepted"
+        ACCEPTED = "ACCEPTED", "Accepted"
         WRONG_ANSWER = "WRONG_ANSWER", "Wrong Answer"
         TIME_LIMIT_EXCEEDED = "TIME_LIMIT_EXCEEDED", "Time Limit Exceeded"
         MEMORY_LIMIT_EXCEEDED = "MEMORY_LIMIT_EXCEEDED", "Memory Limit Exceeded"
-        COMPILE_ERROR = "COMPILE_ERROR", "Compile Error"
         RUNTIME_ERROR = "RUNTIME_ERROR", "Runtime Error"
+        COMPILE_ERROR = "COMPILE_ERROR", "Compile Error"
+        OUTPUT_LIMIT_EXCEEDED = "OUTPUT_LIMIT_EXCEEDED", "Output Limit Exceeded"
         SYSTEM_ERROR = "SYSTEM_ERROR", "System Error"
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -43,15 +44,20 @@ class Submission(models.Model):
         ]
 
 
-class JudgeCaseResult(models.Model):
+class SubmissionCaseResult(models.Model):
     submission = models.ForeignKey(Submission, related_name="case_results", on_delete=models.CASCADE)
-    test_case = models.ForeignKey("problems.TestCase", on_delete=models.PROTECT)
-    verdict = models.CharField(max_length=32, choices=Submission.Verdict.choices)
-    time_ms = models.PositiveIntegerField(default=0)
-    memory_kb = models.PositiveIntegerField(default=0)
+    case = models.ForeignKey("problems.TestCase", on_delete=models.PROTECT)
+    status = models.CharField(max_length=32, choices=Submission.Verdict.choices)
+    time_used = models.PositiveIntegerField(default=0)
+    memory_used = models.PositiveIntegerField(default=0)
+    exit_code = models.IntegerField(null=True, blank=True)
+    stdout = models.TextField(blank=True)
+    stderr = models.TextField(blank=True)
     score = models.PositiveIntegerField(default=0)
     message = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [("submission", "test_case")]
-        ordering = ["submission_id", "test_case_id"]
+        db_table = "submission_case_result"
+        unique_together = [("submission", "case")]
+        ordering = ["submission_id", "case_id"]
