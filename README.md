@@ -14,17 +14,20 @@ An online judge system for ACM/ICPC training teams.
 ## Features
 
 - User roles: admin, coach, member
-- Login and registration
+- Login and email-verification registration with unique email binding
 - Public problem browsing
+- Problem difficulty, tags, source metadata, acceptance statistics, search, and filters
 - Problem management for admin/coach
 - Problem proposal workflow: users submit statements and standard solutions, admin/coach review them
 - Problem editorial workflow: users write problem editorials, admin/coach approve or reject them in a review queue
 - Online submissions for C, C++, Java, and Python
 - Judge statuses: Pending, Judging, Accepted, Wrong Answer, Time Limit Exceeded, Memory Limit Exceeded, Runtime Error, Compile Error, Output Limit Exceeded, System Error
 - Submission history, submission detail API, and per-testcase results
+- Submission abuse protection: code-size limit, minimum interval, and Redis rolling-window rate limit
 - Contest system with public contests, private contests, ACM/IOI rules, problemset picks, contest-only new problems, and ranklists
 - Blog system
 - User profile page with submissions and blog posts
+- Public user profiles and a top-solvers leaderboard
 - Chinese/English UI switch
 
 ## Directory
@@ -130,6 +133,28 @@ GET /api/submissions/?language=CPP
 GET /api/submissions/?status=ACCEPTED
 GET /api/submissions/{id}/
 ```
+
+Default submission rate limits:
+
+- Maximum code size: `64 KB`
+- Minimum interval: `1 second`
+- Rolling window: at most `5` submissions per `60` seconds for each user
+
+Registration flow:
+
+```text
+POST /api/auth/registration_code/
+POST /api/auth/register/
+```
+
+Registration requires a unique email address and a six-digit verification code. Local development uses Django's console email backend, so verification emails are printed in backend logs. Configure SMTP variables from `.env.prod.example` before production deployment.
+
+Default registration abuse limits:
+
+- Verification code lifetime: `10 minutes`
+- Resend cooldown for the same email: `60 seconds`
+- Verification email requests from one IP: at most `10` per hour
+- Verification attempts for one email: at most `10` during the code lifetime
 
 Editorial API:
 

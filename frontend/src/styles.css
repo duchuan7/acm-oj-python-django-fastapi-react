@@ -18,6 +18,7 @@ body,
   display: flex;
   align-items: center;
   padding-inline: 24px;
+  background: #173a32;
   border-bottom: 1px solid rgba(255, 253, 248, 0.08);
   box-shadow: 0 10px 30px rgba(19, 35, 29, 0.16);
 }
@@ -117,6 +118,7 @@ body,
 .content-area {
   min-width: 0;
   padding: 28px;
+  overflow: auto;
 }
 
 .page-heading {
@@ -139,6 +141,85 @@ body,
 
 .blog-list {
   width: 100%;
+}
+
+.home-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  align-items: start;
+  gap: 18px;
+}
+
+.blog-feed,
+.home-rail {
+  width: 100%;
+}
+
+.blog-feed h4.ant-typography {
+  margin: 0;
+}
+
+.overview-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  border: 1px solid #e6ded1;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.88);
+  box-shadow: 0 12px 28px rgba(31, 39, 35, 0.05);
+}
+
+.overview-item {
+  min-width: 0;
+  padding: 16px 18px;
+  border-right: 1px solid #eee5d8;
+}
+
+.overview-item:last-child {
+  border-right: 0;
+}
+
+.overview-item h3.ant-typography {
+  margin: 5px 0 0;
+  color: #173a32;
+}
+
+.profile-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e6ded1;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.82);
+}
+
+.contest-section {
+  width: 100%;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.section-heading h4.ant-typography {
+  margin: 0;
+}
+
+.empty-panel {
+  display: grid;
+  min-height: 220px;
+  place-items: center;
+  border: 1px solid #e6ded1;
+  border-radius: 8px;
+  background: rgba(255, 253, 248, 0.82);
 }
 
 .blog-card,
@@ -197,6 +278,22 @@ body,
 
   .content-area {
     padding: 18px;
+  }
+
+  .overview-strip {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .overview-item:nth-child(2) {
+    border-right: 0;
+  }
+
+  .overview-item:nth-child(-n + 2) {
+    border-bottom: 1px solid #eee5d8;
   }
 
   .page-heading h2.ant-typography {

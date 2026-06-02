@@ -1,5 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Q
+from django.db.models.functions import Lower
 from django.utils import timezone
 
 
@@ -13,6 +15,15 @@ class User(AbstractUser):
     school = models.CharField(max_length=128, blank=True)
     real_name = models.CharField(max_length=64, blank=True)
     last_seen_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                Lower("email"),
+                condition=~Q(email=""),
+                name="accounts_user_unique_nonempty_email_ci",
+            ),
+        ]
 
     @property
     def is_coach_or_admin(self):

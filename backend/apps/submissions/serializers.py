@@ -6,6 +6,7 @@ from apps.problems.models import TestCase
 
 from .models import Submission, SubmissionCaseResult
 from .queue import enqueue_submission
+from .rate_limit import acquire_submission_slot
 
 
 def testcase_path(path):
@@ -107,6 +108,12 @@ class SubmissionSerializer(serializers.ModelSerializer):
             elapsed = (timezone.now() - last).total_seconds()
             if elapsed < settings.SUBMISSION_RATE_LIMIT_SECONDS:
                 raise serializers.ValidationError("Submit too frequently. Please wait before submitting again.")
+        allowed, retry_after = acquire_submission_slot(user.id)
+        if not allowed:
+            raise serializers.ValidationError(
+                f"Submission limit reached: at most {settings.SUBMISSION_RATE_LIMIT_COUNT} submissions "
+                f"per {settings.SUBMISSION_RATE_LIMIT_WINDOW_SECONDS} seconds. Please retry in {retry_after} seconds."
+            )
         return attrs
 
     def create(self, validated_data):

@@ -1,20 +1,29 @@
 import {
   CheckOutlined,
+  AuditOutlined,
+  BookOutlined,
+  CodeOutlined,
   CopyOutlined,
   EditOutlined,
   FileAddOutlined,
   GlobalOutlined,
+  HomeOutlined,
   LoginOutlined,
   LogoutOutlined,
+  OrderedListOutlined,
   PlusOutlined,
   ReloadOutlined,
+  SearchOutlined,
   SendOutlined,
   StopOutlined,
+  TeamOutlined,
+  TrophyOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   Card,
+  Empty,
   Form,
   Input,
   InputNumber,
@@ -65,6 +74,7 @@ const i18n = {
     loginBeforeBlog: "Please login before publishing a blog.",
     loggedIn: "Logged in",
     registered: "Registered",
+    codeSent: "Verification code sent",
     loggedOut: "Logged out",
     submitted: "Submitted",
     blogPublished: "Blog published",
@@ -73,6 +83,27 @@ const i18n = {
     approved: "Approved",
     rejected: "Rejected",
     invalidSamples: "Samples JSON is invalid, saved as empty samples.",
+    noBlogs: "No blog posts yet.",
+    noProblems: "No problems available yet.",
+    noSubmissions: "No submissions found.",
+    noContests: "No contests in this category.",
+    noLeaderboard: "No ranked users yet.",
+    upcomingContests: "Upcoming contests",
+    topSolvers: "Top solvers",
+    latestBlogs: "Latest blogs",
+    contestPhase: { running: "Running", upcoming: "Upcoming", ended: "Ended" },
+    searchProblems: "Search title, ID, source, or tag",
+    allTags: "All tags",
+    allDifficulties: "All difficulties",
+    allLanguages: "All languages",
+    allVerdicts: "All verdicts",
+    clearFilters: "Clear filters",
+    overview: {
+      problems: "Problems",
+      contests: "Public contests",
+      blogs: "Blog posts",
+      submissions: "My submissions",
+    },
     nav: {
       home: "Home",
       problems: "Problems",
@@ -103,6 +134,7 @@ const i18n = {
       create: "Create",
       submitProposal: "Submit Proposal",
       register: "Register",
+      sendCode: "Send code",
     },
     col: {
       id: "ID",
@@ -128,11 +160,16 @@ const i18n = {
       submittedAt: "Submitted",
       case: "Case",
       message: "Message",
+      difficulty: "Difficulty",
+      tags: "Tags",
+      source: "Source",
+      accepted: "Accepted",
     },
     form: {
       username: "Username",
       password: "Password",
       email: "Email",
+      verificationCode: "Verification code",
       language: "Language",
       code: "Code",
       content: "Content",
@@ -171,6 +208,7 @@ const i18n = {
     loginBeforeBlog: "请先登录后发布博客。",
     loggedIn: "登录成功",
     registered: "注册成功",
+    codeSent: "验证码已发送",
     loggedOut: "已退出登录",
     submitted: "提交成功",
     blogPublished: "博客已发布",
@@ -179,6 +217,27 @@ const i18n = {
     approved: "已通过",
     rejected: "已拒绝",
     invalidSamples: "样例 JSON 格式不正确，已按空样例保存。",
+    noBlogs: "暂时还没有博客。",
+    noProblems: "暂时还没有可用题目。",
+    noSubmissions: "没有找到提交记录。",
+    noContests: "此分类下暂时没有比赛。",
+    noLeaderboard: "暂时还没有排名用户。",
+    upcomingContests: "近期比赛",
+    topSolvers: "解题排行",
+    latestBlogs: "最新博客",
+    contestPhase: { running: "进行中", upcoming: "即将开始", ended: "已结束" },
+    searchProblems: "搜索标题、ID、来源或标签",
+    allTags: "全部标签",
+    allDifficulties: "全部难度",
+    allLanguages: "全部语言",
+    allVerdicts: "全部结果",
+    clearFilters: "清除筛选",
+    overview: {
+      problems: "题目",
+      contests: "公开比赛",
+      blogs: "博客",
+      submissions: "我的提交",
+    },
     nav: {
       home: "首页",
       problems: "题库",
@@ -209,6 +268,7 @@ const i18n = {
       create: "创建",
       submitProposal: "提交申请",
       register: "注册",
+      sendCode: "发送验证码",
     },
     col: {
       id: "ID",
@@ -234,11 +294,16 @@ const i18n = {
       submittedAt: "提交时间",
       case: "测试点",
       message: "信息",
+      difficulty: "难度",
+      tags: "标签",
+      source: "来源",
+      accepted: "通过",
     },
     form: {
       username: "用户名",
       password: "密码",
       email: "邮箱",
+      verificationCode: "邮箱验证码",
       language: "语言",
       code: "代码",
       content: "正文",
@@ -283,14 +348,20 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [users, setUsers] = useState([]);
   const [problems, setProblems] = useState([]);
+  const [problemSearch, setProblemSearch] = useState("");
+  const [problemTag, setProblemTag] = useState("ALL");
+  const [problemDifficulty, setProblemDifficulty] = useState("ALL");
   const [proposals, setProposals] = useState([]);
   const [solutions, setSolutions] = useState([]);
   const [reviewCategory, setReviewCategory] = useState("solutions");
   const [blogs, setBlogs] = useState([]);
   const [submissions, setSubmissions] = useState([]);
+  const [submissionLanguage, setSubmissionLanguage] = useState("ALL");
+  const [submissionVerdict, setSubmissionVerdict] = useState("ALL");
   const [contests, setContests] = useState([]);
   const [contestScope, setContestScope] = useState("public");
   const [ranklist, setRanklist] = useState([]);
+  const [leaderboard, setLeaderboard] = useState([]);
   const [profile, setProfile] = useState(null);
   const [selectedProblem, setSelectedProblem] = useState(null);
   const [selectedContestForSubmit, setSelectedContestForSubmit] = useState(null);
@@ -329,14 +400,16 @@ export default function App() {
   async function loadAll(currentUser = user) {
     setLoading(true);
     try {
-      const [problemData, blogData, contestData] = await Promise.all([
+      const [problemData, blogData, contestData, leaderboardData] = await Promise.all([
         request("/problems/"),
         request("/blogs/"),
         request("/contests/"),
+        request("/users/leaderboard/"),
       ]);
       setProblems(asArray(problemData));
       setBlogs(asArray(blogData));
       setContests(asArray(contestData));
+      setLeaderboard(asArray(leaderboardData));
       if (currentUser) {
         const [submissionData, proposalData, userData] = await Promise.all([
           request("/submissions/"),
@@ -350,7 +423,6 @@ export default function App() {
         setSolutions(asArray(solutionData));
       } else {
         setSubmissions([]);
-        setContests([]);
         setProposals([]);
         setUsers([]);
         const solutionData = await request("/problem-solutions/");
@@ -421,6 +493,14 @@ export default function App() {
     }
   }
 
+  async function sendRegistrationCode(email) {
+    await request("/auth/registration_code/", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    });
+    message.success(t.codeSent);
+  }
+
   async function logout() {
     setToken(null);
     setUser(null);
@@ -430,14 +510,12 @@ export default function App() {
   }
 
   async function loadProfile(userId) {
-    if (!requireLogin()) return;
     if (!userId) return;
     const data = await request(`/users/${userId}/profile/`);
     setProfile(data);
   }
 
   async function openUserProfile(userId) {
-    if (!requireLogin()) return;
     if (!userId) return;
     await loadProfile(userId);
     setActive("profile");
@@ -690,14 +768,25 @@ export default function App() {
           </Typography.Link>
         ),
       },
+      { title: t.col.difficulty, dataIndex: "difficulty", width: 110, render: (value) => value || "-" },
+      {
+        title: t.col.tags,
+        dataIndex: "tags",
+        width: 250,
+        render: (values) => (
+          <Space size={[4, 4]} wrap>
+            {asArray(values).map((tag) => <Tag key={tag}>{tag}</Tag>)}
+          </Space>
+        ),
+      },
+      { title: t.col.source, dataIndex: "source", width: 160, render: (value) => value || "-" },
       {
         title: t.col.author,
         dataIndex: "created_by_username",
         width: 140,
         render: (value, record) => <UserNameLink userId={record.created_by} username={value} onOpen={openUserProfile} />,
       },
-      { title: t.col.time, dataIndex: "time_limit_ms", width: 120, render: (value) => `${value} ms` },
-      { title: t.col.memory, dataIndex: "memory_limit_mb", width: 120, render: (value) => `${value} MB` },
+      { title: t.col.accepted, width: 110, render: (_, record) => `${record.accepted_count || 0} / ${record.submission_count || 0}` },
       {
         title: t.col.action,
         width: 120,
@@ -720,14 +809,14 @@ export default function App() {
   );
 
   const navItems = [
-    { key: "home", label: t.nav.home },
-    { key: "problems", label: t.nav.problems },
-    { key: "proposals", label: t.nav.proposals },
-    { key: "submissions", label: t.nav.submissions },
-    { key: "contests", label: t.nav.contests },
-    { key: "ranklist", label: t.nav.ranklist },
-    ...(canManage ? [{ key: "review-queue", label: "Review Queue" }] : []),
-    { key: "profile", label: t.nav.profile },
+    { key: "home", icon: <HomeOutlined />, label: t.nav.home },
+    { key: "problems", icon: <CodeOutlined />, label: t.nav.problems },
+    { key: "proposals", icon: <FileAddOutlined />, label: t.nav.proposals },
+    { key: "submissions", icon: <OrderedListOutlined />, label: t.nav.submissions },
+    { key: "contests", icon: <TrophyOutlined />, label: t.nav.contests },
+    { key: "ranklist", icon: <TeamOutlined />, label: t.nav.ranklist },
+    ...(canManage ? [{ key: "review-queue", icon: <AuditOutlined />, label: "Review Queue" }] : []),
+    { key: "profile", icon: <UserOutlined />, label: t.nav.profile },
   ];
 
   const submissionColumns = [
@@ -751,6 +840,24 @@ export default function App() {
   ];
 
   const scopedContests = asArray(contests).filter((contest) => (contestScope === "public" ? contest.is_public : !contest.is_public));
+  const problemTags = [...new Set(asArray(problems).flatMap((problem) => asArray(problem.tags)))].sort();
+  const filteredProblems = asArray(problems).filter((problem) => {
+    const search = problemSearch.trim().toLowerCase();
+    const haystack = `${problem.id} ${problem.title || ""} ${problem.slug || ""} ${problem.source || ""} ${asArray(problem.tags).join(" ")}`.toLowerCase();
+    const searchMatches = !search || haystack.includes(search);
+    const tagMatches = problemTag === "ALL" || asArray(problem.tags).includes(problemTag);
+    const difficulty = Number(problem.difficulty || 0);
+    const difficultyMatches = problemDifficulty === "ALL"
+      || (problemDifficulty === "EASY" && difficulty > 0 && difficulty <= 1200)
+      || (problemDifficulty === "MEDIUM" && difficulty > 1200 && difficulty <= 1900)
+      || (problemDifficulty === "HARD" && difficulty > 1900);
+    return searchMatches && tagMatches && difficultyMatches;
+  });
+  const filteredSubmissions = asArray(submissions).filter((submission) => {
+    const languageMatches = submissionLanguage === "ALL" || submission.language === submissionLanguage;
+    const verdictMatches = submissionVerdict === "ALL" || submission.verdict === submissionVerdict;
+    return languageMatches && verdictMatches;
+  });
 
   return (
     <Layout className="app-shell">
@@ -792,7 +899,7 @@ export default function App() {
         </Space>
       </Header>
       <Layout>
-        <Sider width={248} theme="light" className="sidebar">
+        <Sider width={248} breakpoint="lg" collapsedWidth={0} theme="light" className="sidebar">
           <Menu
             className="side-menu"
             mode="inline"
@@ -839,13 +946,48 @@ export default function App() {
         </Sider>
         <Content className="content-area">
           {!["problem-detail", "blog-detail", "contest-detail", "solution-detail"].includes(active) && <PageHeading active={active} t={t} />}
-          {active === "home" && <Home blogs={blogs} onOpenBlog={openBlog} onOpenUser={openUserProfile} />}
-          {active === "problems" && <Table className="data-table" rowKey="id" columns={problemColumns} dataSource={asArray(problems)} loading={loading} />}
+          {active === "home" && (
+            <Home
+              t={t}
+              blogs={blogs}
+              problems={problems}
+              contests={contests}
+              submissions={submissions}
+              leaderboard={leaderboard}
+              user={user}
+              onOpenBlog={openBlog}
+              onOpenUser={openUserProfile}
+            />
+          )}
+          {active === "problems" && (
+            <ProblemList
+              t={t}
+              problems={filteredProblems}
+              columns={problemColumns}
+              loading={loading}
+              search={problemSearch}
+              tag={problemTag}
+              tags={problemTags}
+              difficulty={problemDifficulty}
+              onSearch={setProblemSearch}
+              onTag={setProblemTag}
+              onDifficulty={setProblemDifficulty}
+            />
+          )}
           {active === "proposals" && (
             <ProposalTable t={t} proposals={proposals} canManage={canManage} onApprove={(id) => reviewProposal(id, "approve")} onReject={(id) => reviewProposal(id, "reject")} onOpenUser={openUserProfile} />
           )}
           {active === "submissions" && (
-            <Table className="data-table" rowKey="id" columns={submissionColumns} dataSource={asArray(submissions)} loading={loading} expandable={{ expandedRowRender: (record) => renderCases(record, t) }} />
+            <SubmissionList
+              t={t}
+              submissions={filteredSubmissions}
+              columns={submissionColumns}
+              loading={loading}
+              language={submissionLanguage}
+              verdict={submissionVerdict}
+              onLanguage={setSubmissionLanguage}
+              onVerdict={setSubmissionVerdict}
+            />
           )}
           {active === "contests" && <ContestTable t={t} contests={scopedContests} onOpen={openContest} />}
           {active === "ranklist" && <Ranklist t={t} contests={contests} ranklist={ranklist} onChange={loadRanklist} onOpenUser={openUserProfile} />}
@@ -900,7 +1042,7 @@ export default function App() {
         </Content>
       </Layout>
 
-      <LoginModal t={t} open={loginOpen} onCancel={() => setLoginOpen(false)} onLogin={login} onRegister={register} />
+      <LoginModal t={t} open={loginOpen} onCancel={() => setLoginOpen(false)} onLogin={login} onRegister={register} onSendCode={sendRegistrationCode} />
       <SubmitModal
         t={t}
         problem={selectedProblem}
@@ -948,20 +1090,171 @@ function UserNameLink({ userId, username, onOpen }) {
   );
 }
 
-function Home({ blogs, onOpenBlog, onOpenUser }) {
+function Home({ t, blogs, problems, contests, submissions, leaderboard, user, onOpenBlog, onOpenUser }) {
+  const overview = [
+    { label: t.overview.problems, value: asArray(problems).length },
+    { label: t.overview.contests, value: asArray(contests).filter((item) => item.is_public).length },
+    { label: t.overview.blogs, value: asArray(blogs).length },
+    { label: t.overview.submissions, value: user ? asArray(submissions).length : "-" },
+  ];
+  const relevantContests = asArray(contests)
+    .filter((item) => item.is_public && new Date(item.end_at).getTime() >= Date.now())
+    .sort((a, b) => new Date(a.start_at) - new Date(b.start_at))
+    .slice(0, 5);
   return (
-    <Space direction="vertical" className="blog-list" size={14}>
-      {asArray(blogs).map((item) => (
-        <Card
-          className="blog-card"
-          key={item.id}
-          title={<Typography.Link onClick={() => onOpenBlog(item)}>{item.title}</Typography.Link>}
-          extra={<Tag color="default"><UserNameLink userId={item.author} username={item.author_username} onOpen={onOpenUser} /></Tag>}
-        >
-          <Typography.Paragraph ellipsis={{ rows: 4 }}>{item.content}</Typography.Paragraph>
-          <Typography.Text type="secondary">{formatTime(item.created_at)}</Typography.Text>
-        </Card>
-      ))}
+    <Space direction="vertical" className="blog-list" size={18}>
+      <div className="overview-strip">
+        {overview.map((item) => (
+          <div className="overview-item" key={item.label}>
+            <Typography.Text type="secondary">{item.label}</Typography.Text>
+            <Typography.Title level={3}>{item.value}</Typography.Title>
+          </div>
+        ))}
+      </div>
+      <div className="home-grid">
+        <Space direction="vertical" className="blog-feed" size={14}>
+          <Typography.Title level={4}>{t.latestBlogs}</Typography.Title>
+          {asArray(blogs).length ? (
+            asArray(blogs).map((item) => (
+              <Card
+                className="blog-card"
+                key={item.id}
+                title={<Typography.Link onClick={() => onOpenBlog(item)}>{item.title}</Typography.Link>}
+                extra={<Tag color="default"><UserNameLink userId={item.author} username={item.author_username} onOpen={onOpenUser} /></Tag>}
+              >
+                <Typography.Paragraph ellipsis={{ rows: 4 }}>{item.content}</Typography.Paragraph>
+                <Typography.Text type="secondary">{formatTime(item.created_at)}</Typography.Text>
+              </Card>
+            ))
+          ) : (
+            <div className="empty-panel"><Empty description={t.noBlogs} /></div>
+          )}
+        </Space>
+        <Space direction="vertical" className="home-rail" size={14}>
+          <Card title={t.upcomingContests}>
+            {relevantContests.length ? (
+              <List
+                size="small"
+                dataSource={relevantContests}
+                renderItem={(item) => (
+                  <List.Item>
+                    <List.Item.Meta title={item.title} description={formatTime(item.start_at)} />
+                    {renderContestPhase(item)}
+                  </List.Item>
+                )}
+              />
+            ) : (
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t.noContests} />
+            )}
+          </Card>
+          <Card title={t.topSolvers}>
+            <Table
+              rowKey="rank"
+              size="small"
+              pagination={false}
+              dataSource={asArray(leaderboard)}
+              columns={[
+                { title: "#", dataIndex: "rank", width: 48 },
+                { title: t.col.user, dataIndex: "username", render: (value, record) => <UserNameLink userId={record.user_id} username={value} onOpen={onOpenUser} /> },
+                { title: t.col.solved, dataIndex: "solved_count", width: 72 },
+              ]}
+              locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t.noLeaderboard} /> }}
+            />
+          </Card>
+        </Space>
+      </div>
+    </Space>
+  );
+}
+
+function ProblemList({ t, problems, columns, loading, search, tag, tags, difficulty, onSearch, onTag, onDifficulty }) {
+  return (
+    <Space direction="vertical" style={{ width: "100%" }} size={14}>
+      <div className="filter-bar">
+        <Input
+          allowClear
+          prefix={<SearchOutlined />}
+          value={search}
+          onChange={(event) => onSearch(event.target.value)}
+          placeholder={t.searchProblems}
+          style={{ width: 320 }}
+        />
+        <Select
+          value={tag}
+          onChange={onTag}
+          style={{ width: 170 }}
+          options={[{ value: "ALL", label: t.allTags }, ...tags.map((value) => ({ value, label: value }))]}
+        />
+        <Select
+          value={difficulty}
+          onChange={onDifficulty}
+          style={{ width: 180 }}
+          options={[
+            { value: "ALL", label: t.allDifficulties },
+            { value: "EASY", label: "<= 1200" },
+            { value: "MEDIUM", label: "1201 - 1900" },
+            { value: "HARD", label: ">= 1901" },
+          ]}
+        />
+        {(search || tag !== "ALL" || difficulty !== "ALL") && (
+          <Button onClick={() => { onSearch(""); onTag("ALL"); onDifficulty("ALL"); }}>
+            {t.clearFilters}
+          </Button>
+        )}
+      </div>
+      <Table
+        className="data-table"
+        rowKey="id"
+        columns={columns}
+        dataSource={asArray(problems)}
+        loading={loading}
+        scroll={{ x: 1120 }}
+        locale={{ emptyText: <Empty description={t.noProblems} /> }}
+      />
+    </Space>
+  );
+}
+
+function SubmissionList({ t, submissions, columns, loading, language, verdict, onLanguage, onVerdict }) {
+  return (
+    <Space direction="vertical" style={{ width: "100%" }} size={14}>
+      <div className="filter-bar">
+        <Select
+          value={language}
+          onChange={onLanguage}
+          style={{ width: 160 }}
+          options={[
+            { value: "ALL", label: t.allLanguages },
+            { value: "C", label: "C" },
+            { value: "CPP", label: "C++" },
+            { value: "JAVA", label: "Java" },
+            { value: "PYTHON", label: "Python" },
+          ]}
+        />
+        <Select
+          value={verdict}
+          onChange={onVerdict}
+          style={{ width: 230 }}
+          options={[
+            { value: "ALL", label: t.allVerdicts },
+            ...Object.keys(verdictColor).filter((value) => value !== "AC").map((value) => ({ value, label: value })),
+          ]}
+        />
+        {(language !== "ALL" || verdict !== "ALL") && (
+          <Button onClick={() => { onLanguage("ALL"); onVerdict("ALL"); }}>
+            {t.clearFilters}
+          </Button>
+        )}
+      </div>
+      <Table
+        className="data-table"
+        rowKey="id"
+        columns={columns}
+        dataSource={asArray(submissions)}
+        loading={loading}
+        expandable={{ expandedRowRender: (record) => renderCases(record, t) }}
+        locale={{ emptyText: <Empty description={t.noSubmissions} /> }}
+      />
     </Space>
   );
 }
@@ -1143,7 +1436,7 @@ function ProblemDetail({ problem, section, solutions, submissions, submissionCol
         extra={
           <Space>
             <Button icon={<SendOutlined />} type="primary" onClick={onSubmit}>Submit</Button>
-            <Button icon={<EditOutlined />} onClick={onWriteSolution}>Write Editorial</Button>
+            <Button icon={<BookOutlined />} onClick={onWriteSolution}>Write Editorial</Button>
           </Space>
         }
       >
@@ -1306,25 +1599,45 @@ function ReviewQueue({ t, category, proposals, solutions, onApproveProposal, onR
 }
 
 function ContestTable({ t, contests, onOpen }) {
+  const rows = asArray(contests);
+  const groups = [
+    { key: "running", title: t.contestPhase.running, rows: rows.filter((item) => getContestPhase(item) === "RUNNING") },
+    { key: "upcoming", title: t.contestPhase.upcoming, rows: rows.filter((item) => getContestPhase(item) === "UPCOMING") },
+    { key: "ended", title: t.contestPhase.ended, rows: rows.filter((item) => getContestPhase(item) === "ENDED") },
+  ];
+  const columns = [
+    { title: t.col.id, dataIndex: "id", width: 90 },
+    {
+      title: t.col.title,
+      dataIndex: "title",
+      render: (value, record) => <Typography.Link onClick={() => onOpen(record)}>{value}</Typography.Link>,
+    },
+    { title: "Type", dataIndex: "is_public", width: 110, render: (value) => <Tag color={value ? "green" : "gold"}>{value ? "Public" : "Private"}</Tag> },
+    { title: t.col.rule, dataIndex: "rule", width: 100 },
+    { title: "Problems", dataIndex: "contest_problems", width: 110, render: (value) => asArray(value).length },
+    { title: t.col.start, dataIndex: "start_at", render: formatTime },
+    { title: t.col.end, dataIndex: "end_at", render: formatTime },
+  ];
   return (
-    <Table
-      className="data-table"
-      rowKey="id"
-      dataSource={asArray(contests)}
-      columns={[
-        { title: t.col.id, dataIndex: "id", width: 90 },
-        {
-          title: t.col.title,
-          dataIndex: "title",
-          render: (value, record) => <Typography.Link onClick={() => onOpen(record)}>{value}</Typography.Link>,
-        },
-        { title: "Type", dataIndex: "is_public", width: 110, render: (value) => <Tag color={value ? "green" : "gold"}>{value ? "Public" : "Private"}</Tag> },
-        { title: t.col.rule, dataIndex: "rule", width: 100 },
-        { title: "Problems", dataIndex: "contest_problems", width: 110, render: (value) => asArray(value).length },
-        { title: t.col.start, dataIndex: "start_at", render: formatTime },
-        { title: t.col.end, dataIndex: "end_at", render: formatTime },
-      ]}
-    />
+    <Space direction="vertical" style={{ width: "100%" }} size={18}>
+      {groups.map((group) => (
+        <section className="contest-section" key={group.key}>
+          <div className="section-heading">
+            <Typography.Title level={4}>{group.title}</Typography.Title>
+            <Tag>{group.rows.length}</Tag>
+          </div>
+          <Table
+            className="data-table"
+            rowKey="id"
+            size="small"
+            columns={columns}
+            dataSource={group.rows}
+            pagination={group.key === "ended" ? { pageSize: 10 } : false}
+            locale={{ emptyText: <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={t.noContests} /> }}
+          />
+        </section>
+      ))}
+    </Space>
   );
 }
 
@@ -1338,6 +1651,7 @@ function ContestDetail({ contest, ranklist, onLoadRanklist, onSubmit, onOpenUser
       >
         <Space size={18} wrap>
           <Typography.Text strong>{contest.rule}</Typography.Text>
+          {renderContestPhase(contest)}
           <Typography.Text>{formatTime(contest.start_at)} - {formatTime(contest.end_at)}</Typography.Text>
           <Typography.Text>Author: <UserNameLink userId={contest.created_by} username={contest.created_by_username} onOpen={onOpenUser} /></Typography.Text>
         </Space>
@@ -1434,12 +1748,14 @@ function Profile({ t, users, profile, currentUser, onSelect, onOpenUser }) {
   return (
     <Space direction="vertical" style={{ width: "100%" }} size={16}>
       <Space>
-        <Select
-          style={{ width: 260 }}
-          value={selected}
-          options={asArray(users).map((item) => ({ value: item.id, label: `${item.username} (${item.role})` }))}
-          onChange={onSelect}
-        />
+        {!!asArray(users).length && (
+          <Select
+            style={{ width: 260 }}
+            value={selected}
+            options={asArray(users).map((item) => ({ value: item.id, label: `${item.username} (${item.role})` }))}
+            onChange={onSelect}
+          />
+        )}
       </Space>
       {profile && (
         <>
@@ -1455,10 +1771,18 @@ function Profile({ t, users, profile, currentUser, onSelect, onOpenUser }) {
               {!profile.user.is_online && (
                 <Typography.Text>Last seen: {formatTime(profile.user.last_seen_at)}</Typography.Text>
               )}
-              <Typography.Text>Solved: {profile.stats?.solved_count || 0}</Typography.Text>
-              <Typography.Text>Submissions: {profile.stats?.submission_count || 0}</Typography.Text>
             </Space>
           </Card>
+          <div className="overview-strip profile-stats">
+            <div className="overview-item">
+              <Typography.Text type="secondary">Solved</Typography.Text>
+              <Typography.Title level={3}>{profile.stats?.solved_count || 0}</Typography.Title>
+            </div>
+            <div className="overview-item">
+              <Typography.Text type="secondary">Submissions</Typography.Text>
+              <Typography.Title level={3}>{profile.stats?.submission_count || 0}</Typography.Title>
+            </div>
+          </div>
           <Typography.Title level={4}>{t.nav.submissions}</Typography.Title>
           <Table
             rowKey="id"
@@ -1491,7 +1815,7 @@ function Profile({ t, users, profile, currentUser, onSelect, onOpenUser }) {
   );
 }
 
-function LoginModal({ t, open, onCancel, onLogin, onRegister }) {
+function LoginModal({ t, open, onCancel, onLogin, onRegister, onSendCode }) {
   return (
     <Modal title={t.modal.loginOrRegister} open={open} footer={null} onCancel={onCancel}>
       <Tabs
@@ -1516,26 +1840,60 @@ function LoginModal({ t, open, onCancel, onLogin, onRegister }) {
           {
             key: "register",
             label: t.action.register,
-            children: (
-              <Form layout="vertical" onFinish={onRegister}>
-                <Form.Item name="username" label={t.form.username} rules={[{ required: true }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="email" label={t.form.email} rules={[{ type: "email" }]}>
-                  <Input />
-                </Form.Item>
-                <Form.Item name="password" label={t.form.password} rules={[{ required: true, min: 8 }]}>
-                  <Input.Password />
-                </Form.Item>
-                <Button icon={<PlusOutlined />} type="primary" htmlType="submit">
-                  {t.action.register}
-                </Button>
-              </Form>
-            ),
+            children: <RegisterForm t={t} onRegister={onRegister} onSendCode={onSendCode} />,
           },
         ]}
       />
     </Modal>
+  );
+}
+
+function RegisterForm({ t, onRegister, onSendCode }) {
+  const [form] = Form.useForm();
+  const [cooldown, setCooldown] = useState(0);
+
+  useEffect(() => {
+    if (!cooldown) return undefined;
+    const timer = window.setInterval(() => setCooldown((value) => Math.max(value - 1, 0)), 1000);
+    return () => window.clearInterval(timer);
+  }, [cooldown]);
+
+  async function requestCode() {
+    try {
+      const email = await form.validateFields(["email"]).then((values) => values.email);
+      await onSendCode(email);
+      setCooldown(60);
+    } catch (error) {
+      if (error?.errorFields) return;
+      message.error(error.message);
+    }
+  }
+
+  return (
+    <Form form={form} layout="vertical" onFinish={onRegister}>
+      <Form.Item name="username" label={t.form.username} rules={[{ required: true }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item name="email" label={t.form.email} rules={[{ required: true }, { type: "email" }]}>
+        <Input />
+      </Form.Item>
+      <Form.Item label={t.form.verificationCode} required>
+        <Space.Compact style={{ width: "100%" }}>
+          <Form.Item name="verification_code" noStyle rules={[{ required: true, len: 6 }]}>
+            <Input maxLength={6} />
+          </Form.Item>
+          <Button onClick={requestCode} disabled={cooldown > 0}>
+            {cooldown > 0 ? `${cooldown}s` : t.action.sendCode}
+          </Button>
+        </Space.Compact>
+      </Form.Item>
+      <Form.Item name="password" label={t.form.password} rules={[{ required: true, min: 8 }]}>
+        <Input.Password />
+      </Form.Item>
+      <Button icon={<PlusOutlined />} type="primary" htmlType="submit">
+        {t.action.register}
+      </Button>
+    </Form>
   );
 }
 
@@ -1744,6 +2102,17 @@ function ProblemForm({ t, onFinish, submitText, includeStandard = false }) {
       <Form.Item name="slug" label={t.form.slug} rules={[{ required: true }]}>
         <Input />
       </Form.Item>
+      <Space size={16} align="start" wrap>
+        <Form.Item name="difficulty" label={t.col.difficulty}>
+          <InputNumber min={1} placeholder="1200" />
+        </Form.Item>
+        <Form.Item name="source" label={t.col.source}>
+          <Input style={{ width: 240 }} placeholder="Training set / contest" />
+        </Form.Item>
+      </Space>
+      <Form.Item name="tags" label={t.col.tags}>
+        <Select mode="tags" placeholder="dp, graph, greedy" />
+      </Form.Item>
       <Form.Item name="description" label={t.form.description} rules={[{ required: true }]}>
         <Input.TextArea rows={4} />
       </Form.Item>
@@ -1826,6 +2195,22 @@ function renderVerdict(value) {
 function formatTime(value) {
   if (!value) return "-";
   return new Date(value).toLocaleString();
+}
+
+function renderContestPhase(contest) {
+  const phase = getContestPhase(contest);
+  if (phase === "UPCOMING") return <Tag color="blue">Upcoming</Tag>;
+  if (phase === "RUNNING") return <Tag color="green">Running</Tag>;
+  return <Tag>Ended</Tag>;
+}
+
+function getContestPhase(contest) {
+  const now = Date.now();
+  const start = new Date(contest.start_at).getTime();
+  const end = new Date(contest.end_at).getTime();
+  if (now < start) return "UPCOMING";
+  if (now <= end) return "RUNNING";
+  return "ENDED";
 }
 
 function toIsoDateTime(value) {

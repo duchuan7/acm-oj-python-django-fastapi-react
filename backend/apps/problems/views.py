@@ -1,9 +1,11 @@
+from django.db.models import Count, Q
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
 from apps.common.permissions import IsCoachOrAdmin, ReadOnlyOrCoachAdmin
+from apps.submissions.models import Submission
 
 from .models import Problem, ProblemProposal, ProblemSolution
 from .serializers import (
@@ -20,7 +22,34 @@ class ProblemViewSet(viewsets.ModelViewSet):
     permission_classes = [ReadOnlyOrCoachAdmin]
 
     def get_queryset(self):
-        queryset = Problem.objects.prefetch_related("test_cases").select_related("created_by")
+        queryset = (
+            Problem.objects.prefetch_related("test_cases")
+            .select_related("created_by")
+            .annotate(
+                submission_count=Count("submission", distinct=True),
+                accepted_count=Count(
+                    "submission",
+                    filter=Q(submission__verdict=Submission.Verdict.ACCEPTED),
+                    distinct=True,
+                ),
+            )
+        )
+        search = self.request.query_params.get("search")
+        tag = self.request.query_params.get("tag")
+        difficulty_min = self.request.query_params.get("difficulty_min")
+        difficulty_max = self.request.query_params.get("difficulty_max")
+        if search:
+            queryset = queryset.filter(
+                Q(title__icontains=search)
+                | Q(slug__icontains=search)
+                | Q(source__icontains=search)
+            )
+        if tag:
+            queryset = queryset.filter(tags__contains=[tag])
+        if difficulty_min:
+            queryset = queryset.filter(difficulty__gte=difficulty_min)
+        if difficulty_max:
+            queryset = queryset.filter(difficulty__lte=difficulty_max)
         user = self.request.user
         if user.is_staff or getattr(user, "role", None) in {"ADMIN", "COACH"}:
             return queryset

@@ -13,7 +13,9 @@ class TestCaseInline(admin.TabularInline):
 
 @admin.register(Problem)
 class ProblemAdmin(admin.ModelAdmin):
-    list_display = ("id", "title", "is_public", "time_limit_ms", "memory_limit_mb", "delete_link")
+    list_display = ("id", "title", "difficulty", "source", "is_public", "time_limit_ms", "memory_limit_mb", "delete_link")
+    list_filter = ("is_public", "difficulty")
+    search_fields = ("title", "slug", "source")
     prepopulated_fields = {"slug": ("title",)}
     inlines = [TestCaseInline]
     actions = ["delete_selected"]

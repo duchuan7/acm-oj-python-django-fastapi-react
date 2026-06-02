@@ -13,6 +13,8 @@ class TestCaseSerializer(serializers.ModelSerializer):
 class ProblemSerializer(serializers.ModelSerializer):
     test_cases = TestCaseSerializer(many=True, required=False)
     created_by_username = serializers.CharField(source="created_by.username", read_only=True)
+    submission_count = serializers.IntegerField(read_only=True, default=0)
+    accepted_count = serializers.IntegerField(read_only=True, default=0)
 
     class Meta:
         model = Problem
@@ -26,14 +28,27 @@ class ProblemSerializer(serializers.ModelSerializer):
             "samples",
             "time_limit_ms",
             "memory_limit_mb",
+            "difficulty",
+            "tags",
+            "source",
             "is_public",
             "created_by",
             "created_by_username",
             "created_at",
             "updated_at",
             "test_cases",
+            "submission_count",
+            "accepted_count",
         ]
-        read_only_fields = ["id", "created_by", "created_by_username", "created_at", "updated_at"]
+        read_only_fields = [
+            "id",
+            "created_by",
+            "created_by_username",
+            "created_at",
+            "updated_at",
+            "submission_count",
+            "accepted_count",
+        ]
 
     def create(self, validated_data):
         test_cases = validated_data.pop("test_cases", [])
@@ -71,6 +86,9 @@ class ProblemProposalSerializer(serializers.ModelSerializer):
             "samples",
             "time_limit_ms",
             "memory_limit_mb",
+            "difficulty",
+            "tags",
+            "source",
             "standard_language",
             "standard_code",
             "status",
@@ -117,6 +135,9 @@ class ProblemProposalReviewSerializer(serializers.Serializer):
             samples=proposal.samples,
             time_limit_ms=proposal.time_limit_ms,
             memory_limit_mb=proposal.memory_limit_mb,
+            difficulty=proposal.difficulty,
+            tags=proposal.tags,
+            source=proposal.source,
             is_public=True,
             created_by=proposal.author,
         )
