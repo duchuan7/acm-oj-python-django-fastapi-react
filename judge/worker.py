@@ -10,6 +10,7 @@ from sandbox import judge_submission
 
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 QUEUE_NAME = os.getenv("JUDGE_QUEUE_NAME", "judge:submissions")
+PROCESSING_QUEUE_NAME = f"{QUEUE_NAME}:processing"
 BACKEND_BASE_URL = os.getenv("BACKEND_BASE_URL", "http://backend:8000").rstrip("/")
 JUDGE_TOKEN = os.getenv("JUDGE_INTERNAL_TOKEN", "dev-judge-token")
 
@@ -64,13 +65,19 @@ def handle_job(raw):
 def main():
     client = redis.from_url(REDIS_URL)
     print(f"judge worker started, queue={QUEUE_NAME}, backend={BACKEND_BASE_URL}", flush=True)
+    # A job moved to the processing list before a worker crash must be retried.
     while True:
-        item = client.brpop(QUEUE_NAME, timeout=5)
+        stale_item = client.rpop(PROCESSING_QUEUE_NAME)
+        if not stale_item:
+            break
+        client.lpush(QUEUE_NAME, stale_item)
+    while True:
+        item = client.brpoplpush(QUEUE_NAME, PROCESSING_QUEUE_NAME, timeout=5)
         if not item:
             time.sleep(1)
             continue
-        _, raw = item
-        handle_job(raw)
+        handle_job(item)
+        client.lrem(PROCESSING_QUEUE_NAME, 1, item)
 
 
 if __name__ == "__main__":

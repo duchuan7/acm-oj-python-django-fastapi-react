@@ -141,6 +141,9 @@ class ProblemProposalReviewSerializer(serializers.Serializer):
             is_public=True,
             created_by=proposal.author,
         )
+        if not proposal.standard_code.strip():
+            problem.delete()
+            raise serializers.ValidationError("A standard solution is required before approval.")
         proposal.status = ProblemProposal.Status.APPROVED
         proposal.reviewed_by = reviewer
         proposal.reviewed_at = timezone.now()

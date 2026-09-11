@@ -4,7 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 
-from apps.common.permissions import IsCoachOrAdmin, ReadOnlyOrCoachAdmin
+from apps.common.permissions import IsAdminRole, IsCoachOrAdmin, ReadOnlyOrCoachAdmin
 from apps.submissions.models import Submission
 
 from .models import Problem, ProblemProposal, ProblemSolution
@@ -69,8 +69,29 @@ class ProblemProposalViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in {"approve", "reject"}:
-            return [IsCoachOrAdmin()]
+            return [IsAdminRole()]
         return [IsAuthenticated()]
+
+    def perform_update(self, serializer):
+        user = self.request.user
+        instance = serializer.instance
+        if not (user.is_staff or user.role == "ADMIN" or instance.author_id == user.id):
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("You can only edit your own proposals.")
+        if not (user.is_staff or user.role == "ADMIN") and instance.status != ProblemProposal.Status.PENDING:
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("Only pending proposals can be edited.")
+        serializer.save()
+
+    def perform_destroy(self, instance):
+        user = self.request.user
+        if not (user.is_staff or user.role == "ADMIN" or instance.author_id == user.id):
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("You can only delete your own proposals.")
+        instance.delete()
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):
@@ -113,8 +134,33 @@ class ProblemSolutionViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.action in {"approve", "reject"}:
-            return [IsCoachOrAdmin()]
+            return [IsAdminRole()]
         return [IsAuthenticatedOrReadOnly()]
+
+    def perform_update(self, serializer):
+        user = self.request.user
+        instance = serializer.instance
+        if not (user.is_staff or user.role == "ADMIN" or instance.author_id == user.id):
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("You can only edit your own solutions.")
+        if user.id == instance.author_id and not (user.is_staff or user.role == "ADMIN"):
+            serializer.save(
+                status=ProblemSolution.Status.PENDING,
+                reviewed_by=None,
+                reviewed_at=None,
+                review_message="",
+            )
+        else:
+            serializer.save()
+
+    def perform_destroy(self, instance):
+        user = self.request.user
+        if not (user.is_staff or user.role == "ADMIN" or instance.author_id == user.id):
+            from rest_framework.exceptions import PermissionDenied
+
+            raise PermissionDenied("You can only delete your own solutions.")
+        instance.delete()
 
     @action(detail=True, methods=["post"])
     def approve(self, request, pk=None):

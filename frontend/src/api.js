@@ -37,8 +37,13 @@ export async function request(path, options = {}) {
   const contentType = response.headers.get("content-type") || "";
   const data = contentType.includes("application/json") ? await response.json().catch(() => ({})) : {};
   if (!response.ok) {
-    const message = data.detail || data.non_field_errors?.join("; ") || JSON.stringify(data) || `HTTP ${response.status}`;
-    throw new Error(message);
+    const fieldErrors = Object.entries(data)
+      .filter(([key]) => key !== "detail")
+      .flatMap(([key, value]) => (Array.isArray(value) ? value.map((item) => `${key}: ${item}`) : [`${key}: ${value}`]));
+    const error = new Error(data.detail || data.non_field_errors?.join("; ") || fieldErrors.join("; ") || `HTTP ${response.status}`);
+    error.status = response.status;
+    error.retryAfter = response.headers.get("Retry-After");
+    throw error;
   }
   if (!contentType.includes("application/json")) {
     throw new Error("API did not return JSON. Please check the frontend proxy configuration.");

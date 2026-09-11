@@ -82,6 +82,7 @@ def judge_submission(submission):
 
         case_results = []
         for case in submission["test_cases"]:
+            input_path = stage_case_input(workdir, case["input_file"])
             stdout_file = workdir / "out" / f"{case['id']}.txt"
             stdout_file.parent.mkdir(exist_ok=True)
             run_result = run_container(
@@ -90,7 +91,7 @@ def judge_submission(submission):
                 workdir=workdir,
                 timeout_seconds=max(1, int(submission["time_limit_ms"] / 1000) + 1),
                 memory_mb=submission["memory_limit_mb"],
-                stdin_file=case["input_file"],
+                stdin_file=input_path,
                 stdout_file=str(stdout_file),
             )
             verdict, message = verdict_for_case(run_result, stdout_file, case["output_file"])
@@ -135,13 +136,14 @@ def run_container(image, command, workdir, timeout_seconds, memory_mb, stdin_fil
         mem_limit=f"{memory_mb}m",
         nano_cpus=1_000_000_000,
         pids_limit=64,
-        read_only=False,
+        read_only=True,
         cap_drop=["ALL"],
         security_opt=["no-new-privileges"],
+        ulimits=[docker.types.Ulimit(name="fsize", soft=OUTPUT_LIMIT_BYTES, hard=OUTPUT_LIMIT_BYTES)],
         volumes={
             RUNS_VOLUME: {"bind": str(RUNS_ROOT), "mode": "rw"},
-            TESTCASE_VOLUME: {"bind": str(TESTCASE_ROOT), "mode": "ro"},
         },
+        tmpfs={"/tmp": "rw,noexec,nosuid,size=64m"},
     )
     timed_out = False
     try:
@@ -252,6 +254,19 @@ def read_limited(path, limit):
     with path.open("rb") as handle:
         data = handle.read(limit)
     return data.decode("utf-8", errors="replace")
+
+
+def stage_case_input(workdir, input_file):
+    source = Path(input_file)
+    if not source.is_absolute():
+        source = TESTCASE_ROOT / source
+    source = source.resolve()
+    root = TESTCASE_ROOT.resolve()
+    if root not in source.parents:
+        raise ValueError("Test case input path escapes testcase directory")
+    target = workdir / "input.txt"
+    shutil.copyfile(source, target)
+    return str(target)
 
 
 def final_result(verdict, compile_message=""):

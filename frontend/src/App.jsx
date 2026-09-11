@@ -523,21 +523,25 @@ export default function App() {
 
   async function submitCode(values) {
     if (!requireLogin()) return;
-    const submission = await request("/submissions/", {
-      method: "POST",
-      body: JSON.stringify({
-        ...values,
-        problem: selectedProblem.id,
-        ...(selectedContestForSubmit ? { contest: selectedContestForSubmit.id } : {}),
-      }),
-    });
-    message.success(t.submitted);
-    setSelectedProblem(null);
-    setSelectedContestForSubmit(null);
-    setActive("submissions");
-    await loadAll();
-    pollSubmission(submission.id);
-    if (user) await loadProfile(user.id);
+    try {
+      const submission = await request("/submissions/", {
+        method: "POST",
+        body: JSON.stringify({
+          ...values,
+          problem: selectedProblem.id,
+          ...(selectedContestForSubmit ? { contest: selectedContestForSubmit.id } : {}),
+        }),
+      });
+      message.success(t.submitted);
+      setSelectedProblem(null);
+      setSelectedContestForSubmit(null);
+      setActive("submissions");
+      await loadAll();
+      pollSubmission(submission.id);
+      if (user) await loadProfile(user.id);
+    } catch (error) {
+      message.error(error.message || "Submission failed.");
+    }
   }
 
   async function pollSubmission(id) {
@@ -551,12 +555,17 @@ export default function App() {
       "OUTPUT_LIMIT_EXCEEDED",
       "SYSTEM_ERROR",
     ]);
-    for (let attempt = 0; attempt < 40; attempt += 1) {
-      const detail = await request(`/submissions/${id}/`);
-      setSubmissions((items) => asArray(items).map((item) => (item.id === detail.id ? detail : item)));
-      if (selectedSubmission?.id === detail.id) setSelectedSubmission(detail);
-      if (terminal.has(detail.verdict)) {
-        await loadAll();
+    for (let attempt = 0; attempt < 120; attempt += 1) {
+      try {
+        const detail = await request(`/submissions/${id}/`);
+        setSubmissions((items) => asArray(items).map((item) => (item.id === detail.id ? detail : item)));
+        setSelectedSubmission((current) => (current?.id === detail.id ? detail : current));
+        if (terminal.has(detail.verdict)) {
+          await loadAll();
+          return;
+        }
+      } catch (error) {
+        message.error(error.message || "Unable to refresh submission status.");
         return;
       }
       await new Promise((resolve) => setTimeout(resolve, 1500));

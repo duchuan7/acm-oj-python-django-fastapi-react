@@ -1,4 +1,6 @@
-from django.db.models import Count, Min, Q, Sum
+from collections import defaultdict
+
+from django.db import transaction
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
@@ -68,10 +70,13 @@ class ContestSerializer(serializers.ModelSerializer):
         user = request.user
         if validated_data.get("is_public") and not (user.is_staff or user.role == "ADMIN"):
             raise serializers.ValidationError("Only admins can create public contests.")
-        contest = Contest.objects.create(created_by=user, **validated_data)
-        contest.participants.set(participants)
-        for item in problems:
-            self._create_contest_problem(contest, item)
+        if validated_data["end_at"] <= validated_data["start_at"]:
+            raise serializers.ValidationError("Contest end time must be after start time.")
+        with transaction.atomic():
+            contest = Contest.objects.create(created_by=user, **validated_data)
+            contest.participants.set(participants)
+            for item in problems:
+                self._create_contest_problem(contest, item)
         return contest
 
     def update(self, instance, validated_data):
@@ -79,6 +84,10 @@ class ContestSerializer(serializers.ModelSerializer):
         participants = validated_data.pop("participants", None)
         request = self.context["request"]
         user = request.user
+        start_at = validated_data.get("start_at", instance.start_at)
+        end_at = validated_data.get("end_at", instance.end_at)
+        if end_at <= start_at:
+            raise serializers.ValidationError("Contest end time must be after start time.")
         if "is_public" in validated_data and validated_data["is_public"] and not (user.is_staff or user.role == "ADMIN"):
             raise serializers.ValidationError("Only admins can make contests public.")
         instance = super().update(instance, validated_data)
@@ -118,25 +127,59 @@ class ContestSerializer(serializers.ModelSerializer):
 
 
 def build_ranklist(contest):
-    rows = (
-        Submission.objects.filter(contest=contest)
-        .values("user_id", "user__username")
-        .annotate(
-            solved=Count("problem_id", filter=Q(verdict=Submission.Verdict.ACCEPTED), distinct=True),
-            score=Sum("score"),
-            total_time=Sum("max_time_ms"),
-            first_submit=Min("submitted_at"),
-        )
-        .order_by("-solved", "total_time", "first_submit")
-    )
+    submissions = Submission.objects.filter(
+        contest=contest,
+        submitted_at__gte=contest.start_at,
+        submitted_at__lte=contest.end_at,
+    ).select_related("user").order_by("submitted_at", "id")
+    by_user = defaultdict(list)
+    for submission in submissions:
+        by_user[submission.user_id].append(submission)
+
+    rows = []
+    for user_id, user_submissions in by_user.items():
+        problems = defaultdict(list)
+        for submission in user_submissions:
+            problems[submission.problem_id].append(submission)
+        solved = 0
+        score = 0
+        total_time = 0
+        first_submit = user_submissions[0].submitted_at
+        for attempts in problems.values():
+            accepted = next((item for item in attempts if item.verdict == Submission.Verdict.ACCEPTED), None)
+            if contest.rule == Contest.Rule.ACM:
+                if accepted:
+                    solved += 1
+                    wrong_before = sum(
+                        item.verdict == Submission.Verdict.WRONG_ANSWER
+                        for item in attempts
+                        if item.submitted_at <= accepted.submitted_at
+                    )
+                    minutes = max(0, int((accepted.submitted_at - contest.start_at).total_seconds() // 60))
+                    total_time += minutes + wrong_before * 20
+            else:
+                best = max((item.score for item in attempts), default=0)
+                score += best
+                if best:
+                    solved += 1
+                    total_time += max(0, int((attempts[-1].submitted_at - contest.start_at).total_seconds() // 60))
+        rows.append({
+            "user_id": user_id,
+            "username": user_submissions[0].user.username,
+            "solved": solved,
+            "score": score,
+            "total_time_ms": total_time,
+            "first_submit": first_submit,
+        })
+    rows.sort(key=lambda row: (-row["score"] if contest.rule == Contest.Rule.IOI else -row["solved"], row["total_time_ms"], row["first_submit"]))
     return [
         {
             "rank": index + 1,
             "user_id": row["user_id"],
-            "username": row["user__username"],
-            "solved": row["solved"] or 0,
-            "score": row["score"] or 0,
-            "total_time_ms": row["total_time"] or 0,
+            "username": row["username"],
+            "solved": row["solved"],
+            "score": row["score"],
+            "total_time_ms": row["total_time_ms"],
         }
         for index, row in enumerate(rows)
     ]

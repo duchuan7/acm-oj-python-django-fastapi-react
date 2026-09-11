@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count, Q
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import mixins, status, viewsets
 from rest_framework.authtoken.models import Token
@@ -45,8 +46,13 @@ class AuthViewSet(viewsets.GenericViewSet):
     def registration_code(self, request):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
-        ip_address = forwarded_for.split(",")[0].strip() if forwarded_for else request.META.get("REMOTE_ADDR", "unknown")
+        remote_addr = request.META.get("REMOTE_ADDR", "unknown")
+        trusted_proxies = {value.strip() for value in settings.REGISTRATION_TRUSTED_PROXIES.split(",") if value.strip()}
+        if remote_addr in trusted_proxies:
+            forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
+            ip_address = forwarded_for.split(",")[0].strip() if forwarded_for else remote_addr
+        else:
+            ip_address = remote_addr
         send_registration_code(serializer.validated_data["email"], ip_address)
         return Response({"detail": "Verification code sent."})
 
@@ -74,6 +80,11 @@ class AuthViewSet(viewsets.GenericViewSet):
 class UserViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin, viewsets.GenericViewSet):
     queryset = User.objects.all().order_by("id")
     serializer_class = UserSerializer
+
+    def get_serializer_class(self):
+        if self.action in {"list", "retrieve"}:
+            return PublicUserSerializer
+        return super().get_serializer_class()
 
     def get_permissions(self):
         if self.action in {"profile", "leaderboard"}:

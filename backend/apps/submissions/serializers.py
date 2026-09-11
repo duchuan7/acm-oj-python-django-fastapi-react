@@ -3,6 +3,7 @@ from django.utils import timezone
 from rest_framework import serializers
 
 from apps.problems.models import TestCase
+from apps.contests.models import ContestProblem
 
 from .models import Submission, SubmissionCaseResult
 from .queue import enqueue_submission
@@ -98,6 +99,21 @@ class SubmissionSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         request = self.context["request"]
         user = request.user
+        problem = attrs["problem"]
+        contest = attrs.get("contest")
+        privileged = user.is_staff or getattr(user, "role", None) in {"ADMIN", "COACH"}
+        if contest:
+            now = timezone.now()
+            if not (contest.start_at <= now <= contest.end_at):
+                raise serializers.ValidationError("This contest is not currently accepting submissions.")
+            if not ContestProblem.objects.filter(contest=contest, problem=problem).exists():
+                raise serializers.ValidationError("This problem does not belong to the selected contest.")
+            if not contest.is_public and not (
+                privileged or contest.created_by_id == user.id or contest.participants.filter(id=user.id).exists()
+            ):
+                raise serializers.ValidationError("You are not a participant in this contest.")
+        elif not problem.is_public and not privileged:
+            raise serializers.ValidationError("This problem is not available for submission.")
         last = (
             Submission.objects.filter(user=user)
             .order_by("-submitted_at")
@@ -123,7 +139,9 @@ class SubmissionSerializer(serializers.ModelSerializer):
             code_size=len(code.encode("utf-8")),
             **validated_data,
         )
-        enqueue_submission(submission.id)
+        from django.db import transaction
+
+        transaction.on_commit(lambda: enqueue_submission(submission.id))
         return submission
 
 
