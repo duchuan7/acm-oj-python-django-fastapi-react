@@ -1,0 +1,66 @@
+server:
+  port: 8088
+  error:
+    include-message: never
+spring:
+  application:
+    name: duilio-oj
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3308/oj?useUnicode=true&characterEncoding=UTF-8&connectionTimeZone=UTC}
+    username: ${DB_USER:oj}
+    password: ${DB_PASSWORD}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6380}
+      timeout: 3s
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5673}
+    username: ${RABBIT_USER:oj}
+    password: ${RABBIT_PASSWORD}
+    publisher-confirm-type: correlated
+    publisher-returns: true
+    template:
+      mandatory: true
+    listener:
+      simple:
+        acknowledge-mode: auto
+        prefetch: 1
+        default-requeue-rejected: false
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+    time-zone: UTC
+  mail:
+    host: ${SMTP_HOST:localhost}
+    port: ${SMTP_PORT:1025}
+    username: ${SMTP_USER:}
+    password: ${SMTP_PASSWORD:}
+    properties:
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 5000
+      mail.smtp.starttls.enable: ${SMTP_STARTTLS:false}
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+oj:
+  mode: ${OJ_MODE:api}
+  jwt-secret: ${JWT_SECRET}
+  issuer: duilio-oj
+  admin-username: ${ADMIN_USERNAME:admin}
+  admin-password: ${ADMIN_PASSWORD:}
+  mail-from: ${MAIL_FROM:oj@localhost}
+  judge-image: ${JUDGE_IMAGE:duilio-oj-sandbox:1}
+  judge-timeout-seconds: 180
+  seed-demo: ${SEED_DEMO:false}
+
