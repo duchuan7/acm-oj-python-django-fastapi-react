@@ -40,7 +40,7 @@ public class DockerSandbox {
     }
     public Outcome judge(Submission submission,Problem problem,List<TestCase> tests) throws Exception {
         String volume="duilio-oj-job-"+UUID.randomUUID(); Path temp=Files.createTempDirectory("duilio-oj-");
-        long deadline=System.nanoTime()+Duration.ofSeconds(160).toNanos();
+        long deadline=System.nanoTime()+Duration.ofMillis(Math.min(3600000L,30000L+tests.size()*(problem.timeLimitMs+12000L))).toNanos();
         docker("volume","create","--label=duilio.oj.job=true",volume);
         try {
             String file=switch(submission.language) { case "C"->"main.c"; case "CPP"->"main.cpp"; case "JAVA"->"Main.java"; case "PYTHON"->"main.py"; default->throw new IllegalArgumentException("Unsupported language"); };

@@ -6,4 +6,7 @@ frontend/dist/
 test-results/
 playwright-report/
 migration-data/
+.vite/
+__pycache__/
+*.pyc
 

@@ -31,7 +31,7 @@ public class UserController {
     @GetMapping("/leaderboard") Object leaderboard() { return stats.leaderboard(); }
     @GetMapping("/{id}/profile") Object profile(@PathVariable Long id) {
         User user=users.selectById(id); ApiException.require(user!=null,404,"User not found");
-        return Map.of("user",AuthService.publicView(user),"blogs",blogs.selectList(new QueryWrapper<BlogPost>()
+        return Map.of("user",AuthService.publicView(user),"stats",stats.userStats(id),"submissions",stats.profileSubmissions(id),"blogs",blogs.selectList(new QueryWrapper<BlogPost>()
             .eq("author_id",id).eq("status","PUBLISHED").orderByDesc("id").last("LIMIT 50")));
     }
     @PatchMapping("/{id}") Object update(@PathVariable Long id,@Valid @RequestBody UserUpdate input) {

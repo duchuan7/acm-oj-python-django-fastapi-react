@@ -24,14 +24,16 @@ public class DemoData implements ApplicationRunner {
     private final Passwords passwords;
     private final String username,password;
     private final boolean seed;
+    private final boolean bootstrap;
     public DemoData(UserMapper users,ProblemMapper problems,ProblemService problemService,Passwords passwords,
-        @Value("${oj.admin-username}") String username,@Value("${oj.admin-password}") String password,@Value("${oj.seed-demo}") boolean seed) {
+        @Value("${oj.admin-username}") String username,@Value("${oj.admin-password}") String password,@Value("${oj.seed-demo}") boolean seed,
+        @Value("${oj.bootstrap-admin}") boolean bootstrap) {
         this.users=users; this.problems=problems; this.problemService=problemService; this.passwords=passwords;
-        this.username=username; this.password=password; this.seed=seed;
+        this.username=username; this.password=password; this.seed=seed; this.bootstrap=bootstrap;
     }
     @Transactional
     public void run(ApplicationArguments args) {
-        if(password.isBlank()) return;
+        if(password.isBlank()||!bootstrap) return;
         User admin=users.selectOne(new QueryWrapper<User>().eq("username",username));
         if(admin==null) {
             admin=new User(); admin.username=username; admin.email=null; admin.password=passwords.encode(password);

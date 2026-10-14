@@ -31,5 +31,9 @@ public class JudgeJobs {
         results.delete(new QueryWrapper<CaseResult>().eq("submission_id",s.id));
         for(var result:outcome.cases()) { result.submissionId=s.id; results.insert(result); }
     }
+    public void heartbeat(Submission s) {
+        submissions.update(new UpdateWrapper<Submission>().eq("id",s.id).eq("verdict","JUDGING")
+            .eq("lease_token",s.leaseToken).set("lease_until",Instant.now().plusSeconds(240)));
+    }
 }
 

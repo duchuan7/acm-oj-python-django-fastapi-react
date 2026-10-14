@@ -27,11 +27,14 @@ public class JudgeWorker {
         try { id=Long.valueOf(message); } catch(NumberFormatException e) { throw new org.springframework.amqp.AmqpRejectAndDontRequeueException("Invalid submission id"); }
         Submission s=jobs.claim(id); if(s==null) return;
         DockerSandbox.Outcome outcome;
+        var heartbeat=java.util.concurrent.Executors.newSingleThreadScheduledExecutor(Thread.ofVirtual().factory());
+        heartbeat.scheduleAtFixedRate(()->{try{jobs.heartbeat(s);}catch(Exception e){log.warn("Heartbeat failed for submission {}",id);}},30,30,java.util.concurrent.TimeUnit.SECONDS);
         try { outcome=sandbox.judge(s,problems.selectById(s.problemId),tests.selectList(new QueryWrapper<TestCase>().eq("problem_id",s.problemId).orderByAsc("case_order"))); }
         catch(Exception e) {
             log.error("Sandbox failed for submission {}",id,e);
             outcome=new DockerSandbox.Outcome("SYSTEM_ERROR",0,0,0,"Judge infrastructure failed; contact administrator",List.of());
         }
+        finally { heartbeat.shutdownNow(); }
         jobs.finish(s,outcome);
     }
 }
