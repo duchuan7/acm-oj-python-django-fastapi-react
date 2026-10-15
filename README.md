@@ -1,5 +1,8 @@
 # ACM Training Online Judge
 
+> Java 21 / Spring Boot / MySQL 8.4 / Vue 3 迁移版位于 [java-platform](java-platform/README.md)。
+> 新版已提供独立 Compose、判题进程、测试与数据迁移工具；下文为保留的旧版本说明。
+
 An online judge system for ACM/ICPC training teams.
 
 ## Tech Stack

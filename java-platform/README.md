@@ -1,52 +1,43 @@
-# duilio OJ · Java 21 迁移版
+# duilio OJ · Java 21
 
-此目录是原 OJ 的 Java / Vue 迁移实现，当前暂停在验证阶段，尚未作为正式替代版本验收。
+原 ACM 训练 OJ 的 Java / Vue 迁移实现。保留三种角色、邮箱注册、题库、四种语言判题、
+比赛、投稿与题解审核、博客、公开个人资料、解题榜和中英文界面。
+旧 Django / React / Python 代码保留在仓库上一级，真实旧数据尚未切换。
 
-完整状态、测试证据和恢复步骤见 [MIGRATION_CHECKPOINT.md](MIGRATION_CHECKPOINT.md)。
+| 部分 | 实现 |
+| --- | --- |
+| 后端 | Java 21、Spring Boot 3.5、Maven，Controller / Service / Mapper |
+| 数据库 | MySQL 8.4、Flyway 版本迁移 |
+| 数据访问 | MyBatis-Plus，统计查询使用 SQL |
+| 登录与权限 | Spring Security、Bearer JWT，ADMIN / COACH / MEMBER |
+| 排队与恢复 | RabbitMQ、数据库 outbox、租约、重复消息防护 |
+| 缓存与限流 | Redis 题目详情缓存、原子提交限流 |
+| 判题 | Java worker、Linux Docker，C17 / C++17 / Java 21 / Python 3 |
+| 前端 | Vue 3、Element Plus、Vite |
+| 验证 | JUnit、Playwright、真实容器联调、PostgreSQL → MySQL 迁移测试 |
 
-- 后端：Java 21 / Spring Boot / MyBatis-Plus / Spring Security JWT
-- 数据：MySQL 8.4 / Redis / RabbitMQ
-- 判题：Java worker / Linux Docker，C、C++17、Java、Python
-- 前端：Vue 3 / Element Plus
-- 原 Django / React 版本保留在仓库上一级，可独立运行
+## 快速启动
 
-## 本地开发
-
-需要 Docker Desktop 的 Linux engine、JDK 21、Maven、Node.js 24、PowerShell 7。
+先启动 Docker 的 Linux engine，在本目录执行：
 
 ~~~powershell
 .\scripts\setup.ps1
-.\scripts\start-dev.ps1 -JavaHome '你的 JDK 21 目录'
+docker compose up -d --build --wait
 ~~~
 
-打开 [前端](http://127.0.0.1:5175)，本地测试邮件可在
-[Mailpit](http://127.0.0.1:8026) 查看。管理员账号和随机密码在本目录 .env 中。
-setup 脚本不会覆盖已经存在的 .env。
+Linux 使用 bash scripts/setup.sh 初始化配置，Compose 命令相同。
+打开 [OJ 页面](http://127.0.0.1:5175)，管理员随机密码在本目录 .env 中。
+[本地测试邮箱](http://127.0.0.1:8026) 用于查看注册和密码重置验证码。
+首次构建需要下载镜像与依赖。
 
-停止宿主机开发进程：
+## 文档
 
-~~~powershell
-.\scripts\stop-dev.ps1
-docker compose stop
-~~~
+- [启动、开发、测试与 Linux 部署](docs/DEPLOYMENT.md)
+- [代码结构与一次提交的完整链路](docs/ARCHITECTURE.md)
+- [旧数据迁移与回退](docs/MIGRATION.md)
+- [本机验证记录与适用边界](docs/VERIFICATION.md)
+- [当前工作检查点](MIGRATION_CHECKPOINT.md)
 
-上述操作保留数据库和 Docker 卷。
-
-## 验证
-
-~~~powershell
-cd backend
-mvn verify
-cd ../frontend
-npm ci
-npm run build
-cd ..
-python scripts/smoke.py
-~~~
-
-smoke 测试需要正在运行的开发栈，会生成测试账户、题目、比赛与提交；
-结果保存在 .runtime/，不提交到 Git。
-
-全容器部署的定义为 compose.yml，尚需最终构建与联调验证。
-数据迁移工具位于 migration/，默认只做 dry-run，往返验证尚未完成。
-
+API 与判题进程独立运行，只有 judge 挂载 Docker socket。
+源码大小、提交频率、内存、时间、进程数和输出都有约束。
+Docker 隔离的适用边界及判题主机要求见部署文档。
