@@ -75,4 +75,3 @@ CREATE TABLE blog_post (
  status VARCHAR(16) NOT NULL, created_at DATETIME(6) NOT NULL, updated_at DATETIME(6) NOT NULL,
  FOREIGN KEY(author_id) REFERENCES oj_user(id)
 );
-

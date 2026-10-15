@@ -1,0 +1,109 @@
+name: duilio-oj-java
+services:
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: oj
+      MYSQL_USER: oj
+      MYSQL_PASSWORD: ${DB_PASSWORD:?Run scripts/setup.ps1 first}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Run setup first}
+    ports: ["127.0.0.1:3308:3306"]
+    volumes: [mysql_data:/var/lib/mysql]
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_0900_ai_ci"]
+    healthcheck:
+      test: ["CMD-SHELL", "MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 40
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["127.0.0.1:6380:6379"]
+    volumes: [redis_data:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 20
+  rabbit:
+    image: rabbitmq:4.3.6-management
+    environment:
+      RABBITMQ_DEFAULT_USER: oj
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_PASSWORD:?Run setup first}
+    ports: ["127.0.0.1:5673:5672", "127.0.0.1:15673:15672"]
+    volumes: [rabbit_data:/var/lib/rabbitmq]
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+  mailpit:
+    image: axllent/mailpit:v1.29
+    ports: ["127.0.0.1:8026:8025", "127.0.0.1:1026:1025"]
+  api:
+    build:
+      context: backend
+      target: runtime
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/oj?connectionTimeZone=UTC
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET:?Run setup first}
+      ADMIN_USERNAME: ${ADMIN_USERNAME:-admin}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Run setup first}
+      SEED_DEMO: ${SEED_DEMO:-true}
+      BOOTSTRAP_ADMIN: ${BOOTSTRAP_ADMIN:-true}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-false}
+      MAIL_FROM: ${MAIL_FROM:-oj@localhost}
+    depends_on:
+      mysql: {condition: service_healthy}
+      redis: {condition: service_healthy}
+      rabbit: {condition: service_healthy}
+    ports: ["127.0.0.1:8088:8088"]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8088/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+  judge:
+    build:
+      context: backend
+      target: judge
+    environment:
+      DB_URL: jdbc:mysql://mysql:3306/oj?connectionTimeZone=UTC
+      DB_PASSWORD: ${DB_PASSWORD}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      RABBIT_HOST: rabbit
+      RABBIT_PORT: 5672
+      RABBIT_PASSWORD: ${RABBIT_PASSWORD}
+      OJ_MODE: judge
+      SPRING_PROFILES_ACTIVE: judge
+      SEED_DEMO: "false"
+      BOOTSTRAP_ADMIN: "false"
+    volumes: ["/var/run/docker.sock:/var/run/docker.sock"]
+    depends_on:
+      api: {condition: service_healthy}
+      sandbox: {condition: service_completed_successfully}
+    restart: unless-stopped
+  sandbox:
+    build: sandbox
+    image: duilio-oj-sandbox:1
+    entrypoint: ["/bin/true"]
+    network_mode: none
+  web:
+    build: frontend
+    depends_on:
+      api: {condition: service_healthy}
+    ports: ["127.0.0.1:5175:80"]
+volumes:
+  mysql_data:
+  redis_data:
+  rabbit_data:

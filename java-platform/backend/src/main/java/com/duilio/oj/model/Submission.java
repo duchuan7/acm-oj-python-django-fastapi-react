@@ -2,10 +2,11 @@ package com.duilio.oj.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-@TableName(value="submission", autoResultMap=true)
+@TableName(value = "submission", autoResultMap = true)
 public class Submission {
-    @TableId(type=IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     public Long id;
+
     public Long userId;
     public Long problemId;
     public Long contestId;
@@ -23,4 +24,3 @@ public class Submission {
     public java.time.Instant leaseUntil;
     public Integer judgeAttempts;
 }
-

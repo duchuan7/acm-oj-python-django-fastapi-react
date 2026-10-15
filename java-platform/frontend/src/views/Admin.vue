@@ -1,0 +1,223 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { ElMessageBox } from 'element-plus';
+import { api, items, emptyProblem, editableProblem } from '../api.js';
+import { session, t, staff, admin } from '../session.js';
+import ProblemEditor from '../components/ProblemEditor.vue';
+const tab = ref('problems'),
+  problems = ref([]),
+  users = ref([]),
+  proposals = ref([]),
+  solutions = ref([]),
+  open = ref(false),
+  draft = ref(emptyProblem()),
+  editing = ref(null),
+  reviewItem = ref(null),
+  search = ref(''),
+  page = ref(1),
+  count = ref(0);
+async function load() {
+  if (!staff()) return;
+  const result = await api(
+    '/problems?search=' + encodeURIComponent(search.value) + '&page=' + page.value,
+  );
+  problems.value = items(result);
+  count.value = result.count;
+  users.value = items(await api('/users'));
+  proposals.value = items(await api('/problem-proposals?status=PENDING'));
+  solutions.value = items(await api('/problem-solutions?status=PENDING'));
+}
+async function edit(row = null) {
+  editing.value = row?.id || null;
+  draft.value = row ? editableProblem(await api('/problems/' + row.id)) : emptyProblem();
+  open.value = true;
+}
+async function save() {
+  await api('/problems' + (editing.value ? '/' + editing.value : ''), {
+    method: editing.value ? 'PUT' : 'POST',
+    body: draft.value,
+  });
+  open.value = false;
+  await load();
+}
+async function remove(row) {
+  await ElMessageBox.confirm(
+    t(
+      '删除题目？存在提交记录的题目无法删除。',
+      'Delete this problem? Referenced problems cannot be deleted.',
+    ),
+  );
+  await api('/problems/' + row.id, { method: 'DELETE' });
+  await load();
+}
+async function review(row, approve) {
+  const answer = await ElMessageBox.prompt(
+    t('填写审核意见（可留空）', 'Review message (optional)'),
+    approve ? t('通过审核', 'Approve') : t('拒绝', 'Reject'),
+    { inputValue: '' },
+  );
+  await api(
+    (tab.value === 'proposals' ? '/problem-proposals/' : '/problem-solutions/') +
+      row.id +
+      (approve ? '/approve' : '/reject'),
+    { method: 'POST', body: { review_message: answer.value } },
+  );
+  reviewItem.value = null;
+  await load();
+}
+async function changeUser(user, field, value) {
+  await api('/users/' + user.id, { method: 'PATCH', body: { [field]: value } });
+  await load();
+}
+onMounted(() => load().catch(() => {}));
+</script>
+<template>
+  <template v-if="staff()"
+    ><div class="page-heading">
+      <div>
+        <div class="eyebrow">Team administration</div>
+        <h1>{{ t('让训练有序进行。', 'Keep training running.') }}</h1>
+        <p class="subtitle">
+          {{
+            t(
+              '管理题库、审核内容与维护成员权限。',
+              'Manage problems, review content and maintain member access.',
+            )
+          }}
+        </p>
+      </div>
+      <el-button v-if="tab === 'problems'" type="primary" @click="edit()">{{
+        t('新增题目', 'New problem')
+      }}</el-button>
+    </div>
+    <section class="panel">
+      <el-tabs v-model="tab"
+        ><el-tab-pane :label="t('题目管理', 'Problems')" name="problems" /><el-tab-pane
+          :label="t('题目投稿审核', 'Proposals')"
+          name="proposals" /><el-tab-pane
+          :label="t('题解审核', 'Editorials')"
+          name="solutions" /><el-tab-pane
+          v-if="admin()"
+          :label="t('用户管理', 'Users')"
+          name="users"
+      /></el-tabs>
+      <template v-if="tab === 'problems'"
+        ><div class="toolbar">
+          <el-input
+            v-model="search"
+            :placeholder="t('搜索题目', 'Search problems')"
+            @keyup.enter="
+              page = 1;
+              load();
+            "
+          /><el-button
+            @click="
+              page = 1;
+              load();
+            "
+            >{{ t('搜索', 'Search') }}</el-button
+          >
+        </div>
+        <el-table :data="problems"
+          ><el-table-column prop="id" label="#" width="70" /><el-table-column
+            prop="title"
+            :label="t('标题', 'Title')"
+          /><el-table-column :label="t('可见性', 'Visibility')" width="110"
+            ><template #default="{ row }">{{
+              row.is_public ? t('公开', 'Public') : t('私有', 'Private')
+            }}</template></el-table-column
+          ><el-table-column width="150"
+            ><template #default="{ row }"
+              ><el-button text @click="edit(row)">{{ t('编辑', 'Edit') }}</el-button
+              ><el-button text type="danger" @click="remove(row)">{{
+                t('删除', 'Delete')
+              }}</el-button></template
+            ></el-table-column
+          ></el-table
+        ><el-pagination
+          layout="prev,pager,next"
+          v-model:current-page="page"
+          :page-size="30"
+          :total="count"
+          @current-change="load"
+      /></template>
+      <el-table v-else-if="tab === 'users'" :data="users"
+        ><el-table-column prop="username" :label="t('用户', 'User')" /><el-table-column
+          prop="email"
+          :label="t('邮箱', 'Email')" /><el-table-column label="Role"
+          ><template #default="{ row }"
+            ><el-select
+              :model-value="row.role"
+              :disabled="row.id === session.user.id"
+              @update:model-value="(v) => changeUser(row, 'role', v)"
+              ><el-option
+                v-for="r in ['MEMBER', 'COACH', 'ADMIN']"
+                :key="r"
+                :value="r" /></el-select></template></el-table-column
+        ><el-table-column :label="t('启用', 'Active')" width="100"
+          ><template #default="{ row }"
+            ><el-switch
+              :model-value="row.active"
+              :disabled="row.id === session.user.id"
+              @update:model-value="
+                (v) => changeUser(row, 'active', v)
+              " /></template></el-table-column
+      ></el-table>
+      <el-table v-else :data="tab === 'proposals' ? proposals : solutions"
+        ><el-table-column prop="title" :label="t('标题', 'Title')" /><el-table-column
+          prop="author_username"
+          :label="t('作者', 'Author')"
+          width="130"
+        /><el-table-column width="230"
+          ><template #default="{ row }"
+            ><el-button text @click="reviewItem = row">{{ t('查看', 'View') }}</el-button
+            ><el-button v-if="admin()" text type="primary" @click="review(row, true)">{{
+              t('通过', 'Approve')
+            }}</el-button
+            ><el-button v-if="admin()" text type="danger" @click="review(row, false)">{{
+              t('拒绝', 'Reject')
+            }}</el-button></template
+          ></el-table-column
+        ></el-table
+      >
+    </section></template
+  ><el-empty v-else :description="t('需要教练或管理员权限', 'Coach or admin access required')" />
+  <el-dialog v-model="open" :title="t('编辑题目', 'Edit problem')" width="900px"
+    ><ProblemEditor v-model="draft" /><template #footer
+      ><el-button type="primary" @click="save">{{
+        t('保存题目', 'Save problem')
+      }}</el-button></template
+    ></el-dialog
+  >
+  <el-dialog
+    :model-value="!!reviewItem"
+    @update:model-value="
+      (v) => {
+        if (!v) reviewItem = null;
+      }
+    "
+    :title="reviewItem?.title"
+    width="900px"
+    ><template v-if="reviewItem"
+      ><template v-if="tab === 'proposals'"
+        ><div class="statement">{{ reviewItem.problem.description }}</div>
+        <h3>{{ t('标准解答', 'Standard solution') }} · {{ reviewItem.standard_language }}</h3>
+        <pre>{{ reviewItem.standard_code }}</pre>
+        <h3>{{ t('测试数据', 'Testcases') }}</h3>
+        <div v-for="c in reviewItem.problem.test_cases" :key="c.order" class="form-grid">
+          <pre>{{ c.input }}</pre>
+          <pre>{{ c.output }}</pre>
+        </div></template
+      >
+      <div v-else class="statement">{{ reviewItem.content }}</div>
+      <div v-if="admin()" class="action-row">
+        <el-button type="primary" @click="review(reviewItem, true)">{{
+          t('通过审核', 'Approve')
+        }}</el-button
+        ><el-button type="danger" plain @click="review(reviewItem, false)">{{
+          t('拒绝', 'Reject')
+        }}</el-button>
+      </div></template
+    ></el-dialog
+  >
+</template>

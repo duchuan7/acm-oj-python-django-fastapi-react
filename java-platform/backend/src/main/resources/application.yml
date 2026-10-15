@@ -11,11 +11,11 @@ spring:
     password: ${DB_PASSWORD}
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST:127.0.0.1}
       port: ${REDIS_PORT:6380}
       timeout: 3s
   rabbitmq:
-    host: ${RABBIT_HOST:localhost}
+    host: ${RABBIT_HOST:127.0.0.1}
     port: ${RABBIT_PORT:5673}
     username: ${RABBIT_USER:oj}
     password: ${RABBIT_PASSWORD}
@@ -32,7 +32,7 @@ spring:
     property-naming-strategy: SNAKE_CASE
     time-zone: UTC
   mail:
-    host: ${SMTP_HOST:localhost}
+    host: ${SMTP_HOST:127.0.0.1}
     port: ${SMTP_PORT:1025}
     username: ${SMTP_USER:}
     password: ${SMTP_PASSWORD:}
@@ -46,6 +46,9 @@ mybatis-plus:
   global-config:
     banner: false
 management:
+  health:
+    mail:
+      enabled: false
   endpoints:
     web:
       exposure:
@@ -63,4 +66,4 @@ oj:
   judge-image: ${JUDGE_IMAGE:duilio-oj-sandbox:1}
   judge-timeout-seconds: 180
   seed-demo: ${SEED_DEMO:false}
-
+  bootstrap-admin: ${BOOTSTRAP_ADMIN:true}

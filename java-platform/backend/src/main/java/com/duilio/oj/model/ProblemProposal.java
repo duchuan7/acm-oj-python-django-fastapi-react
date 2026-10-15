@@ -2,10 +2,11 @@ package com.duilio.oj.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-@TableName(value="problem_proposal", autoResultMap=true)
+@TableName(value = "problem_proposal", autoResultMap = true)
 public class ProblemProposal {
-    @TableId(type=IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     public Long id;
+
     public Long authorId;
     public String title;
     public String problemData;
@@ -18,4 +19,3 @@ public class ProblemProposal {
     public java.time.Instant createdAt;
     public java.time.Instant reviewedAt;
 }
-

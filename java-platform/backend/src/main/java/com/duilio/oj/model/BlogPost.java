@@ -2,10 +2,11 @@ package com.duilio.oj.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-@TableName(value="blog_post", autoResultMap=true)
+@TableName(value = "blog_post", autoResultMap = true)
 public class BlogPost {
-    @TableId(type=IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     public Long id;
+
     public Long authorId;
     public String title;
     public String content;
@@ -13,4 +14,3 @@ public class BlogPost {
     public java.time.Instant createdAt;
     public java.time.Instant updatedAt;
 }
-
