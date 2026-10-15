@@ -15,6 +15,13 @@ QQ 邮箱配置阶段也已完成：SMTP AUTH、465 隐式 TLS、30 秒读取超
 14 项 JUnit、4 项配置脚本测试、11 项浏览器检查通过。
 SMTP 凭据仅在本地 .env / .runtime 中；具体操作见 docs/QQ-MAIL.md。
 
+独立机器验收阶段已完成：9 阶段完整运行通过，包含 20 学生、41 提交、
+3 条浏览器流程、400 次读取、故障恢复、自然封榜结束、12 项迁移检查和旧/新接口比较。
+脚本在 acceptance/，报告在 docs/MACHINE-ACCEPTANCE.md 和脱敏 JSON。
+判题临时容器/卷新增可配置 namespace 标签，使故障后的清理能只作用于本次测试。
+测试资源已清理；原运行服务、真实数据和 QQ 配置未修改，main 未合并。
+旧版样例复制、比赛状态分组仍需对齐，真实数据与服务器切换尚未执行。
+
 ## 工作位置与授权
 
 - 原仓库：C:\Users\zhao\Documents\Codex\2026-05-15\acm-oj-python-django-fastapi-react

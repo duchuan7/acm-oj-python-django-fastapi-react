@@ -27,6 +27,8 @@ jobs:
         run: mvn -B -ntp verify
       - name: Verify mail setup helper
         run: python3 -m unittest discover -s java-platform/scripts/tests -v
+      - name: Verify independent ranking oracle
+        run: python3 -m unittest discover -s java-platform/acceptance -p 'test_*.py' -v
   frontend:
     runs-on: ubuntu-latest
     defaults:

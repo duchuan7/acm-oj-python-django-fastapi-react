@@ -38,6 +38,8 @@ Linux 使用 bash scripts/setup.sh 初始化配置，Compose 命令相同。
 - [本机验证记录与适用边界](docs/VERIFICATION.md)
 - [前端视觉约定与页面预览](docs/FRONTEND-DESIGN.md)
 - [QQ 邮箱真实验证码配置](docs/QQ-MAIL.md)
+- [独立机器验收与运行方式](acceptance/README.md)
+- [机器验收结果与未覆盖范围](docs/MACHINE-ACCEPTANCE.md)
 - [当前工作检查点](MIGRATION_CHECKPOINT.md)
 
 API 与判题进程独立运行，只有 judge 挂载 Docker socket。
