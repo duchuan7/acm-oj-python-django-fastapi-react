@@ -10,10 +10,11 @@
 | --- | --- | --- |
 | JUnit | 14 / 14 通过 | JDK 21 + H2；也在 Linux 镜像构建时通过 |
 | 真实端到端 | 34 / 34 通过 | MySQL 8.4、Redis、RabbitMQ、Java worker、Docker 沙箱 |
-| 浏览器 | 10 / 10 通过 | 视觉更新后，Edge / Playwright，Vite 与完整 Nginx 容器入口 |
+| 浏览器 | 11 / 11 通过 | 邮件适配后，Edge / Playwright，完整 Nginx 容器入口 |
 | 数据迁移 | 12 / 12 通过 | 新建 PostgreSQL 16 → 空 MySQL 8.4，含事务回滚 |
 | 队列可靠性 | 3 / 3 通过 | RabbitMQ 离线恢复、outbox 继续投递、重复消息幂等 |
 | 前端 | 构建通过 | Node.js 24，npm ci / build，Prettier 检查 |
+| 邮件配置脚本 | 4 / 4 通过 | 保留原配置、拒绝空值与重复项、认证失败不切换、不打印凭据 |
 | Docker Compose | 完整栈就绪 | API health 为 UP，judge 消费队列，web 可访问 |
 
 ## 关键证据
@@ -62,6 +63,14 @@
 [移动端截图](screenshots/mobile.png)
 
 ## 测试数据与运行状态
+
+QQ 邮箱适配已补充 SMTP AUTH、465 隐式 TLS、服务器身份校验与写超时，
+开发脚本不再覆盖自定义 SMTP 端口。更新后的 API 镜像内 14 项 JUnit 通过。
+本机已通过 smtp.qq.com:465 的 TLS 握手与真实 SMTP 身份认证；
+注册页实际发信请求返回 200，QQ 接受邮件，用户确认真实邮箱已收到验证码。
+当前网络下该次请求约 32 秒，因此邮件读取超时调为 30 秒，
+发送按钮增加等待状态、重复点击防护及失败后恢复；新增浏览器回归通过。
+获取与应用步骤见 [QQ 邮箱真实发信](QQ-MAIL.md)。
 
 定向清理脚本已移除本轮 smoke 题目、比赛、记录及测试账户，
 保留 A + B 演示题、管理员和已实际产生的演示提交。

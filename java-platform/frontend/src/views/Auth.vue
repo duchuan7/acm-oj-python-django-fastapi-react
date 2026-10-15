@@ -7,14 +7,25 @@ import { t, setSession } from '../session.js';
 import PracticeArt from '../components/PracticeArt.vue';
 const router = useRouter(),
   tab = ref('login'),
-  busy = ref(false);
+  busy = ref(false),
+  sending = ref(false);
 const form = ref({ username: '', email: '', password: '', code: '', school: '', real_name: '' });
 async function code() {
-  await api(tab.value === 'reset' ? '/auth/password-reset-code' : '/auth/registration-code', {
-    method: 'POST',
-    body: { email: form.value.email },
-  });
-  ElMessage.success(t('验证码已发送', 'Code sent'));
+  if (sending.value) return;
+  sending.value = true;
+  try {
+    await api(tab.value === 'reset' ? '/auth/password-reset-code' : '/auth/registration-code', {
+      method: 'POST',
+      body: { email: form.value.email },
+    });
+    ElMessage.success(
+      t('验证码已发送，请查看收件箱或垃圾邮件', 'Code sent. Check your inbox or spam folder.'),
+    );
+  } catch {
+    // api() already shows the server error; allow the user to retry.
+  } finally {
+    sending.value = false;
+  }
 }
 async function submit() {
   busy.value = true;
@@ -91,7 +102,9 @@ async function submit() {
           <el-form-item v-if="tab !== 'login'" :label="t('邮箱验证码', 'Verification code')"
             ><el-input v-model="form.code" maxlength="6" aria-label="Verification code"
               ><template #append
-                ><el-button @click="code">{{ t('发送验证码', 'Send code') }}</el-button></template
+                ><el-button :loading="sending" @click="code">{{
+                  sending ? t('发送中…', 'Sending…') : t('发送验证码', 'Send code')
+                }}</el-button></template
               ></el-input
             ></el-form-item
           >

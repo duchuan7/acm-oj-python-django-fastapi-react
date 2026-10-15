@@ -16,7 +16,10 @@ $version = & $javaExe -version 2>&1 | Out-String
 if ($version -notmatch 'version "21\.') { throw 'JDK 21 is required.' }
 $env:JAVA_HOME = $JavaHome
 $env:Path = (Join-Path $JavaHome 'bin') + ';' + $env:Path
-$env:SMTP_PORT = '1026'
+if (-not $env:SMTP_HOST -or $env:SMTP_HOST -eq 'mailpit') {
+    $env:SMTP_HOST = '127.0.0.1'
+    if (-not $env:SMTP_PORT -or $env:SMTP_PORT -eq '1025') { $env:SMTP_PORT = '1026' }
+}
 $env:OJ_MODE = 'api'
 $env:SPRING_PROFILES_ACTIVE = ''
 New-Item -ItemType Directory -Path '.runtime' -Force | Out-Null

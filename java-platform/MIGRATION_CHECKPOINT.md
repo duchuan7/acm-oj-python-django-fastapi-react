@@ -9,6 +9,12 @@
 10 项浏览器回归在 Vite 与正式 Nginx 入口通过，web 镜像已更新并运行；
 本阶段未修改后端或数据库，预览与规范见 docs/FRONTEND-DESIGN.md。
 
+QQ 邮箱配置阶段也已完成：SMTP AUTH、465 隐式 TLS、30 秒读取超时、
+本地配置校验工具与注册页发送等待状态已部署。用户在本地提供凭据后，
+工具验证 QQ SMTP 登录并更新 .env；注册页发信返回 200，用户确认收到真实验证码。
+14 项 JUnit、4 项配置脚本测试、11 项浏览器检查通过。
+SMTP 凭据仅在本地 .env / .runtime 中；具体操作见 docs/QQ-MAIL.md。
+
 ## 工作位置与授权
 
 - 原仓库：C:\Users\zhao\Documents\Codex\2026-05-15\acm-oj-python-django-fastapi-react

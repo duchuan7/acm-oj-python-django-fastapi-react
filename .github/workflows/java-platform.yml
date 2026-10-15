@@ -25,6 +25,8 @@ jobs:
       - name: Verify Java backend
         working-directory: java-platform/backend
         run: mvn -B -ntp verify
+      - name: Verify mail setup helper
+        run: python3 -m unittest discover -s java-platform/scripts/tests -v
   frontend:
     runs-on: ubuntu-latest
     defaults:

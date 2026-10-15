@@ -281,3 +281,38 @@ test('problem archive distinguishes a load failure from an empty search and can 
   await page.getByPlaceholder('搜索题目、来源').press('Enter');
   await expect(page.getByText('没有找到匹配的题目，试试其他筛选条件。')).toBeVisible();
 });
+
+test('verification email shows progress and recovers from a sending failure', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  let release;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  let calls = 0;
+  await page.route('**/api/auth/registration-code', async (route) => {
+    calls++;
+    if (calls === 1) {
+      await pending;
+      await route.fulfill({ status: 200, json: { detail: 'Verification email sent' } });
+    } else {
+      await route.fulfill({ status: 503, json: { detail: 'Email service unavailable' } });
+    }
+  });
+  await page.goto('/auth');
+  await page.getByRole('tab', { name: '注册', exact: true }).click();
+  await page.getByLabel('Email', { exact: true }).fill('browser-mail@example.test');
+  await page.getByRole('button', { name: '发送验证码', exact: true }).click();
+  await expect(page.getByRole('button', { name: '发送中…', exact: true })).toBeDisabled();
+  expect(calls).toBe(1);
+  release();
+  await expect(
+    page.getByText('验证码已发送，请查看收件箱或垃圾邮件', { exact: true }),
+  ).toBeVisible();
+  const send = page.getByRole('button', { name: '发送验证码', exact: true });
+  await expect(send).toBeEnabled();
+  await send.click();
+  await expect(page.getByText('Email service unavailable', { exact: true })).toBeVisible();
+  await expect(send).toBeEnabled();
+  expect(errors).toEqual([]);
+});
