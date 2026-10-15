@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { api, items } from '../api.js';
 import { t, session } from '../session.js';
@@ -9,8 +9,19 @@ const route = useRoute(),
   language = ref('CPP'),
   code = ref(''),
   busy = ref(false),
-  editorials = ref([]);
-onMounted(async () => {
+  loading = ref(true),
+  editorials = ref([]),
+  gutter = ref(null);
+const lines = computed(() => Math.max(18, code.value.split('\n').length));
+const codeBytes = computed(() => new TextEncoder().encode(code.value).length);
+const languageLabel = computed(
+  () =>
+    ({ C: 'C17', CPP: 'C++17', JAVA: 'Java 21 · public class Main', PYTHON: 'Python 3' })[
+      language.value
+    ],
+);
+async function load() {
+  loading.value = true;
   try {
     problem.value = await api(
       '/problems/' +
@@ -18,8 +29,12 @@ onMounted(async () => {
         (route.query.contest ? '?contest=' + route.query.contest : ''),
     );
     editorials.value = items(await api('/problem-solutions?problem=' + route.params.id));
-  } catch {}
-});
+  } catch {
+  } finally {
+    loading.value = false;
+  }
+}
+onMounted(load);
 async function submit() {
   if (!session.user) {
     router.push('/auth');
@@ -41,80 +56,88 @@ async function submit() {
     busy.value = false;
   }
 }
+function syncGutter(event) {
+  if (gutter.value) gutter.value.scrollTop = event.target.scrollTop;
+}
 </script>
 <template>
-  <template v-if="problem"
-    ><div class="page-heading">
+  <section v-if="loading" class="panel" :aria-label="t('正在加载题目', 'Loading problem')">
+    <el-skeleton :rows="10" animated />
+  </section>
+  <template v-else-if="problem">
+    <div class="page-heading problem-heading">
       <div>
-        <div class="eyebrow">Problem / {{ problem.id }}</div>
+        <div class="eyebrow">
+          <router-link :to="route.query.contest ? '/contests/' + route.query.contest : '/'">{{
+            route.query.contest ? t('返回比赛', 'Back to contest') : t('题目集', 'Problem archive')
+          }}</router-link
+          ><span>/</span>Problem {{ String(problem.id).padStart(3, '0') }}
+        </div>
         <h1>{{ problem.title }}</h1>
-        <div class="tags">
+        <div v-if="problem.tags?.length" class="tags">
           <el-tag v-for="tag in problem.tags" :key="tag" type="info" size="small">{{ tag }}</el-tag>
         </div>
+        <div class="problem-meta">
+          <span
+            >{{ t('时间限制', 'Time limit') }}<b>{{ problem.time_limit_ms }} ms</b></span
+          >
+          <span
+            >{{ t('内存限制', 'Memory limit') }}<b>{{ problem.memory_limit_mb }} MiB</b></span
+          >
+          <span
+            >{{ t('难度', 'Rating') }}<b>{{ problem.difficulty || '—' }}</b></span
+          >
+          <span v-if="problem.source"
+            >{{ t('来源', 'Source') }}<b>{{ problem.source }}</b></span
+          >
+        </div>
       </div>
-      <router-link :to="'/submissions?problem=' + problem.id"
-        >{{ t('查看提交', 'Submissions') }} →</router-link
+      <router-link class="text-link" :to="'/submissions?problem=' + problem.id"
+        >{{ t('查看提交', 'Submissions') }}<span aria-hidden="true">↗</span></router-link
       >
     </div>
-    <div class="two-col">
-      <div>
-        <section class="panel">
-          <h2>{{ t('题目描述', 'Statement') }}</h2>
-          <div class="statement">{{ problem.description }}</div>
-          <h3>{{ t('输入', 'Input') }}</h3>
-          <div class="statement">{{ problem.input_description }}</div>
-          <h3>{{ t('输出', 'Output') }}</h3>
-          <div class="statement">{{ problem.output_description }}</div>
-          <template v-for="(s, i) in problem.samples" :key="i"
-            ><h3>{{ t('样例', 'Sample') }} {{ i + 1 }}</h3>
-            <div class="form-grid">
-              <pre>{{ s.input }}</pre>
-              <pre>{{ s.output }}</pre>
-            </div></template
-          >
-        </section>
-        <section class="panel">
-          <div class="toolbar">
-            <h2 style="margin: 0">{{ t('提交代码', 'Submit solution') }}</h2>
-            <el-select v-model="language" aria-label="Language"
-              ><el-option
-                v-for="v in ['C', 'CPP', 'JAVA', 'PYTHON']"
-                :key="v"
-                :value="v"
-                :label="v"
-            /></el-select>
+    <div class="problem-workbench">
+      <div class="reading-column">
+        <section class="panel statement-panel">
+          <div class="panel-heading">
+            <h2>{{ t('题目描述', 'Statement') }}</h2>
+            <span class="eyebrow">Read & understand</span>
           </div>
-          <p class="muted">
+          <div class="statement-body">
+            <div class="statement">{{ problem.description }}</div>
+            <h3>{{ t('输入', 'Input') }}</h3>
+            <div class="statement">{{ problem.input_description }}</div>
+            <h3>{{ t('输出', 'Output') }}</h3>
+            <div class="statement">{{ problem.output_description }}</div>
+            <template v-for="(s, i) in problem.samples" :key="i"
+              ><h3>{{ t('样例', 'Sample') }} {{ i + 1 }}</h3>
+              <div class="sample-grid">
+                <div>
+                  <div class="sample-label">{{ t('输入', 'Input') }}</div>
+                  <pre>{{ s.input }}</pre>
+                </div>
+                <div>
+                  <div class="sample-label">{{ t('输出', 'Output') }}</div>
+                  <pre>{{ s.output }}</pre>
+                </div>
+              </div></template
+            >
+          </div>
+        </section>
+        <section class="panel editorials-panel">
+          <div class="section-heading">
+            <h2>
+              {{ t('题解', 'Editorials') }}<span class="count-badge">{{ editorials.length }}</span>
+            </h2>
+          </div>
+          <p v-if="!editorials.length" class="subtitle">
             {{
-              language === 'JAVA'
-                ? 'Java 21 · public class Main'
-                : language === 'CPP'
-                  ? 'C++17'
-                  : language === 'C'
-                    ? 'C17'
-                    : 'Python 3'
+              t(
+                '暂无已通过审核的题解。先试着写下你的思路吧。',
+                'No approved editorials yet. Try working through your own idea first.',
+              )
             }}
-            · 64 KiB
           </p>
-          <el-input
-            v-model="code"
-            class="code"
-            type="textarea"
-            :rows="18"
-            :placeholder="t('在这里编写代码…', 'Write your solution here…')"
-            aria-label="Source code"
-          />
-          <div class="action-row">
-            <el-button type="primary" :loading="busy" @click="submit">{{
-              session.user ? t('提交评测', 'Submit') : t('登录后提交', 'Sign in to submit')
-            }}</el-button>
-          </div>
-        </section>
-        <section class="panel">
-          <h2>{{ t('题解', 'Editorials') }}</h2>
-          <div v-if="!editorials.length" class="muted">
-            {{ t('暂无已通过审核的题解。', 'No approved editorials yet.') }}
-          </div>
           <div v-for="e in editorials" :key="e.id" class="list-card">
             <div>
               <h3>
@@ -126,26 +149,54 @@ async function submit() {
           </div>
         </section>
       </div>
-      <aside class="side-card">
-        <h2>{{ t('题目信息', 'Details') }}</h2>
-        <div class="stat">
-          <span>{{ t('时间', 'Time') }}</span
-          ><b>{{ problem.time_limit_ms }} ms</b>
+      <section class="panel editor-panel">
+        <div class="panel-heading">
+          <h2>{{ t('提交代码', 'Submit solution') }}</h2>
+          <el-select v-model="language" aria-label="Language"
+            ><el-option
+              v-for="v in ['C', 'CPP', 'JAVA', 'PYTHON']"
+              :key="v"
+              :value="v"
+              :label="{ C: 'C17', CPP: 'C++17', JAVA: 'Java 21', PYTHON: 'Python 3' }[v]"
+          /></el-select>
         </div>
-        <div class="stat">
-          <span>{{ t('内存', 'Memory') }}</span
-          ><b>{{ problem.memory_limit_mb }} MiB</b>
+        <div class="editor-meta">
+          <span>{{ languageLabel }}</span
+          ><span class="mono">{{ (codeBytes / 1024).toFixed(1) }} / 64 KiB</span>
         </div>
-        <div class="stat">
-          <span>{{ t('难度', 'Rating') }}</span
-          ><b>{{ problem.difficulty || '—' }}</b>
+        <div class="editor-field">
+          <div class="line-numbers" ref="gutter" aria-hidden="true">
+            <span v-for="n in lines" :key="n">{{ n }}</span>
+          </div>
+          <el-input
+            v-model="code"
+            class="code"
+            type="textarea"
+            :rows="18"
+            wrap="off"
+            spellcheck="false"
+            autocapitalize="off"
+            autocomplete="off"
+            :placeholder="t('// 在这里，让思路成为代码。', '// Give your idea a place to begin.')"
+            aria-label="Source code"
+            @scroll.capture="syncGutter"
+          />
         </div>
-        <div class="stat">
-          <span>{{ t('来源', 'Source') }}</span
-          ><span>{{ problem.source || '—' }}</span>
+        <div class="editor-footer">
+          <span>{{ t('写好以后，让代码来回答。', 'Ready? Let your code speak.') }}</span
+          ><el-button
+            type="primary"
+            :loading="busy"
+            :disabled="!!session.user && (!code.trim() || codeBytes > 65536)"
+            @click="submit"
+            >{{ session.user ? t('提交评测', 'Submit') : t('登录后提交', 'Sign in to submit')
+            }}<span aria-hidden="true">↗</span></el-button
+          >
         </div>
-      </aside>
-    </div></template
+      </section>
+    </div>
+  </template>
+  <el-empty v-else :description="t('题目不可用', 'Problem unavailable')"
+    ><el-button @click="load">{{ t('重试', 'Retry') }}</el-button></el-empty
   >
-  <el-empty v-else :description="t('题目不可用', 'Problem unavailable')" />
 </template>

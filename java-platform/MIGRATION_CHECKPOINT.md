@@ -4,6 +4,11 @@
 权限复查、文档和本机验证已完成；GitHub 提交以当前 git log 为准。
 不要根据旧的“暂停”记录重新做已完成步骤。
 
+后续前端视觉阶段（2026-10-15）也已完成：暖米白/陶土橙主题、
+桌面题面与代码分栏、手机按题面/代码/题解排序、统一表单表格与结果详情。
+10 项浏览器回归在 Vite 与正式 Nginx 入口通过，web 镜像已更新并运行；
+本阶段未修改后端或数据库，预览与规范见 docs/FRONTEND-DESIGN.md。
+
 ## 工作位置与授权
 
 - 原仓库：C:\Users\zhao\Documents\Codex\2026-05-15\acm-oj-python-django-fastapi-react

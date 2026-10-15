@@ -1,6 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 export const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    return savedPosition || (to.hash ? { el: to.hash } : { top: 0 });
+  },
   routes: [
     { path: '/', component: () => import('./views/Problems.vue') },
     { path: '/problems/:id', component: () => import('./views/Problem.vue') },

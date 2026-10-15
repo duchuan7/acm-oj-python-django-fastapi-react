@@ -63,7 +63,7 @@ onMounted(() => load().catch(() => {}));
     <div v-for="post in tab === 'blogs' ? blogs : editorials" :key="post.id" class="list-card">
       <div>
         <h3>
-          <span class="clickable" @click="detail = post">{{ post.title }}</span>
+          <button class="article-title" @click="detail = post">{{ post.title }}</button>
           <el-tag size="small" type="info">{{ post.status }}</el-tag>
         </h3>
         <p class="muted">
