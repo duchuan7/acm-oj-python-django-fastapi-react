@@ -16,4 +16,3 @@ $lines = @(
 )
 [System.IO.File]::WriteAllLines((Join-Path $PWD '.env'), $lines, [System.Text.UTF8Encoding]::new($false))
 Write-Output 'Created .env with random secrets. Read ADMIN_USERNAME and ADMIN_PASSWORD locally to sign in.'
-

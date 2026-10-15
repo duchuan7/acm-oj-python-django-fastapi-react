@@ -2,10 +2,11 @@ package com.duilio.oj.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-@TableName(value="case_result", autoResultMap=true)
+@TableName(value = "case_result", autoResultMap = true)
 public class CaseResult {
-    @TableId(type=IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     public Long id;
+
     public Long submissionId;
     public Long caseId;
     public String status;
@@ -15,5 +16,6 @@ public class CaseResult {
     public String stdout;
     public String stderr;
     public Integer score;
+    public String message;
+    public java.time.Instant createdAt;
 }
-

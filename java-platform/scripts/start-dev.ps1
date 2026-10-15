@@ -20,6 +20,18 @@ $env:SMTP_PORT = '1026'
 $env:OJ_MODE = 'api'
 $env:SPRING_PROFILES_ACTIVE = ''
 New-Item -ItemType Directory -Path '.runtime' -Force | Out-Null
+foreach($name in @('api','judge','web')) {
+    $pidFile = Join-Path $PWD ".runtime\$name.pid"
+    if((Test-Path -LiteralPath $pidFile) -and (Get-Process -Id ([int](Get-Content -LiteralPath $pidFile)) -ErrorAction SilentlyContinue)) {
+        throw "$name is already running. Run scripts/stop-dev.ps1 before building or restarting."
+    }
+}
+$ports = if($NoWeb){ @(8088) }else{ @(8088,5175) }
+foreach($port in $ports){
+    if(Get-NetTCPConnection -LocalPort $port -State Listen -ErrorAction SilentlyContinue){
+        throw "Port $port is already in use. Stop the existing app stack before starting development processes."
+    }
+}
 docker compose up -d --wait mysql redis rabbit mailpit
 if ($LASTEXITCODE -ne 0) { throw 'Dependency startup failed.' }
 if (-not $SkipSandboxBuild) {
@@ -56,7 +68,7 @@ if (-not $NoWeb) {
     try { if (-not (Test-Path node_modules)) { npm.cmd ci; if($LASTEXITCODE -ne 0){throw 'npm ci failed'} } }
     finally { Pop-Location }
     $vite = Join-Path $PWD 'frontend\node_modules\vite\bin\vite.js'
-    Start-OwnedProcess 'web' (Get-Command node.exe).Source @(('"' + $vite + '"'),'--host','127.0.0.1','--port','5175','--strictPort')
+    $viteConfig = Join-Path $PWD 'frontend\vite.config.js'
+    Start-OwnedProcess 'web' (Get-Command node.exe).Source @(('"' + $vite + '"'),'--config',('"' + $viteConfig + '"'),'--host','127.0.0.1','--port','5175','--strictPort')
 }
 Write-Output 'API: http://127.0.0.1:8088/api | Web: http://127.0.0.1:5175 | Test mailbox: http://127.0.0.1:8026'
-

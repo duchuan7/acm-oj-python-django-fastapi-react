@@ -67,4 +67,3 @@ oj:
   judge-timeout-seconds: 180
   seed-demo: ${SEED_DEMO:false}
   bootstrap-admin: ${BOOTSTRAP_ADMIN:true}
-

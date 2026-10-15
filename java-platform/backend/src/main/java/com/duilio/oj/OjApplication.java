@@ -13,4 +13,3 @@ public class OjApplication {
         SpringApplication.run(OjApplication.class, args);
     }
 }
-

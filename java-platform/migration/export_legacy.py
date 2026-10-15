@@ -39,4 +39,3 @@ with transaction.atomic():
         files[str(case.pk)] = embedded
     payload = {"format": "duilio-oj-legacy-v1", "objects": objects, "testcase_files": files}
     json.dump(payload, sys.stdout, ensure_ascii=False, indent=2)
-

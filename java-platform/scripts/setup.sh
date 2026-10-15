@@ -13,4 +13,3 @@ umask 077
   echo "SEED_DEMO=true"
 } > .env
 echo "Created .env with random secrets. Read admin credentials locally."
-

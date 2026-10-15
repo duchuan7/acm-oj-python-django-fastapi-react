@@ -93,6 +93,20 @@ def run():
     call("/submissions", "POST", {"problem": pid, "language": "CPP", "code": "x"}, expected=401)
     call("/submissions", "POST", {"problem": hidden["id"], "language": "CPP", "code": "x"}, alice, expected=403)
     check("submission authentication and private problem checks")
+    reset_email = accounts[0]["email"]
+    call("/auth/password-reset-code", "POST", {"email": reset_email})
+    reset_code = mailbox_code(reset_email)
+    new_password = secrets.token_hex(12)
+    call("/auth/password-reset", "POST", {"email": reset_email, "code": "invalid", "password": new_password}, expected=400)
+    old_password = accounts[0]["password"]
+    call("/auth/password-reset", "POST", {"email": reset_email, "code": reset_code, "password": new_password})
+    accounts[0]["password"] = new_password
+    cache.write_text(json.dumps(accounts))
+    call("/auth/me", token=alice, expected=401)
+    call("/auth/login", "POST", {"username": accounts[0]["username"], "password": old_password}, expected=401)
+    alice = login(accounts[0]["username"], new_password)["token"]
+    call("/auth/password-reset", "POST", {"email": reset_email, "code": reset_code, "password": new_password}, expected=400)
+    check("password reset verifies email, rejects reused codes, and invalidates prior sessions")
     blog = call("/blogs", "POST", {"title": "smoke draft", "content": "private draft", "status": "DRAFT"}, alice)
     call("/blogs/" + str(blog["id"]), expected=404)
     call("/blogs/" + str(blog["id"]), "PUT", {"title": "stolen", "content": "x", "status": "PUBLISHED"}, bob, expected=404)
@@ -115,13 +129,21 @@ def run():
     end = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(time.time() + 1800))
     contest_data = dict(title="smoke private " + suffix, description="private training", rule="ACM", start_at=start,
                         end_at=end, is_public=False, freeze_rank_minutes=0, participants=[],
-                        contest_problems=[dict(problem=None, new_problem=problem("smoke-contest-" + suffix), alias="A", score=100, order=1)])
+                        contest_problems=[dict(problem=None, new_problem=problem("smoke-contest-" + suffix), alias="A", score=100, order=1),
+                                          dict(problem=pid, new_problem=None, alias="B", score=100, order=2)])
     contest = call("/contests", "POST", contest_data, alice)
     cid, cpid = contest["id"], contest["contest_problems"][0]["problem"]
     call("/contests/" + str(cid), token=bob, expected=404)
     call("/problems/" + str(cpid), token=alice, expected=404)
     call("/problems/" + str(cpid) + "?contest=" + str(cid), token=alice)
     check("contest-only problems require contest visibility")
+    private_submission = call("/submissions", "POST", {
+        "problem": pid, "contest": cid, "language": "PYTHON",
+        "code": "a,b=map(int,input().split());print(a+b)"}, alice)
+    check("private contest submission metadata stays hidden from non-participants",
+          call("/submissions?problem=" + str(pid), token=bob)["count"] == 0
+          and call("/submissions?problem=" + str(pid), token=alice)["count"] == 1)
+    time.sleep(1.05)
     denied = dict(contest_data, is_public=True, contest_problems=[])
     call("/contests", "POST", denied, alice, expected=403)
     check("only admins can create public contests")
@@ -144,7 +166,7 @@ def run():
         ("PYTHON", "open('/etc/oj-forbidden','w').write('x')", "RUNTIME_ERROR"),
     ]
     tokens = [at, alice, bob, coach]
-    submitted = []
+    submitted = [(private_submission["id"], "ACCEPTED", alice)]
     for index, (lang, code, verdict) in enumerate(jobs):
         token = tokens[index % len(tokens)]
         row = call("/submissions", "POST", {"problem": pid, "language": lang, "code": code}, token)
@@ -184,4 +206,3 @@ def run():
 
 if __name__ == "__main__":
     run()
-

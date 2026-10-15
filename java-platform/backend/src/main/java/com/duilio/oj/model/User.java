@@ -2,10 +2,11 @@ package com.duilio.oj.model;
 
 import com.baomidou.mybatisplus.annotation.*;
 
-@TableName(value="oj_user", autoResultMap=true)
+@TableName(value = "oj_user", autoResultMap = true)
 public class User {
-    @TableId(type=IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     public Long id;
+
     public String username;
     public String email;
     @com.fasterxml.jackson.annotation.JsonIgnore public String password;
@@ -17,4 +18,3 @@ public class User {
     public java.time.Instant lastSeenAt;
     public java.time.Instant createdAt;
 }
-

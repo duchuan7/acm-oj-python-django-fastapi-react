@@ -2,7 +2,7 @@
 Dry-run is the default. --apply uses this checkout's Compose MySQL and one transaction.
 All SQL identifiers are fixed; data values are represented as UTF-8 hex literals.
 """
-import argparse, collections, datetime, json, subprocess
+import argparse, collections, datetime, json, re, subprocess
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -90,7 +90,8 @@ def convert(payload):
         f = obj["fields"]
         result.append(insert("case_result", dict(id=obj["pk"], submission_id=f["submission"], case_id=f["case"],
             status=f["status"], time_used=f["time_used"], memory_used=f["memory_used"], exit_code=f["exit_code"],
-            stdout=f["stdout"], stderr=f["stderr"], score=f["score"])))
+            stdout=f["stdout"], stderr=f["stderr"], score=f["score"],
+            message=f.get("message", ""), created_at=instant(f.get("created_at")))))
     for obj in groups["problems.problemproposal"]:
         f = obj["fields"]
         data = {k: f[k] for k in ["title", "slug", "description", "input_description", "output_description", "samples",
@@ -122,9 +123,14 @@ def convert(payload):
             generated_at=instant(f["generated_at"]), frozen=f["frozen"], payload=f["payload"])))
     return result
 
-def mysql(sql):
-    command = ["docker", "compose", "exec", "-T", "mysql", "sh", "-c",
-               'MYSQL_PWD="$MYSQL_PASSWORD" exec mysql -u"$MYSQL_USER" "$MYSQL_DATABASE" --batch --skip-column-names']
+def mysql(sql, database=None):
+    command = ["docker", "compose", "exec", "-T"]
+    if database:
+        if not re.fullmatch(r"[a-zA-Z][a-zA-Z0-9_]{0,63}", database):
+            raise ValueError("Invalid database name")
+        command += ["-e", "MYSQL_DATABASE=" + database]
+    command += ["mysql", "sh", "-c",
+               'MYSQL_PWD="$MYSQL_PASSWORD" exec mysql -u"$MYSQL_USER" "$MYSQL_DATABASE" --batch --skip-column-names --default-character-set=utf8mb4']
     result = subprocess.run(command, cwd=ROOT, input=sql, text=True, encoding="utf-8", capture_output=True)
     if result.returncode:
         raise RuntimeError("MySQL import failed and transaction was not committed: " + result.stderr[:1000])
@@ -134,6 +140,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("snapshot", type=Path)
     parser.add_argument("--apply", action="store_true", help="Write only into an empty target schema")
+    parser.add_argument("--database", help="Explicit target database (default: Compose MYSQL_DATABASE)")
     args = parser.parse_args()
     payload = json.loads(args.snapshot.read_text(encoding="utf-8-sig"))
     statements = convert(payload)
@@ -144,11 +151,10 @@ def main():
         print("Dry-run only. No database changes.")
         return
     counts_sql = "SELECT " + "+".join("(SELECT COUNT(*) FROM " + table + ")" for table in TABLES) + ";"
-    if mysql(counts_sql).strip() != "0":
+    if mysql(counts_sql, args.database).strip() != "0":
         raise RuntimeError("Target schema is not empty. Use a separate empty database; no records were removed.")
-    mysql("SET NAMES utf8mb4; SET time_zone='+00:00'; START TRANSACTION;\n" + "\n".join(statements) + "\nCOMMIT;")
+    mysql("SET NAMES utf8mb4; SET time_zone='+00:00'; START TRANSACTION;\n" + "\n".join(statements) + "\nCOMMIT;", args.database)
     print("Import committed. Start API and judge, then compare source/target counts and sample login/verdicts.")
 
 if __name__ == "__main__":
     main()
-

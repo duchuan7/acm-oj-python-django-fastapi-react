@@ -13,4 +13,3 @@ foreach($name in @('web','judge','api')) {
     Remove-Item -LiteralPath $pidFile
 }
 Write-Output 'Stopped checkout-owned app processes. Database, queue, cache and their data are kept.'
-
