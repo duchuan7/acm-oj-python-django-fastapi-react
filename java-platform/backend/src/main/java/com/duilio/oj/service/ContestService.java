@@ -187,6 +187,7 @@ public class ContestService {
                     409,
                     "Contest is immutable after submissions");
         if (id == null) {
+            c.rankingPolicy = "WEIGHTED";
             c.createdBy = actor.id;
             c.createdAt = Instant.now();
         }
@@ -259,13 +260,14 @@ public class ContestService {
                         && Instant.now().isBefore(c.endAt)
                         && !Instant.now().isBefore(c.endAt.minusSeconds(c.freezeRankMinutes * 60L));
         if (frozen) cutoff = c.endAt.minusSeconds(c.freezeRankMinutes * 60L);
-        var rows =
-                submissions.selectList(
-                        new QueryWrapper<Submission>()
-                                .eq("contest_id", id)
-                                .ge("submitted_at", c.startAt)
-                                .lt("submitted_at", cutoff)
-                                .orderByAsc("submitted_at", "id"));
+        var query =
+                new QueryWrapper<Submission>()
+                        .eq("contest_id", id)
+                        .ge("submitted_at", c.startAt)
+                        .orderByAsc("submitted_at", "id");
+        if (!frozen && "LEGACY".equals(c.rankingPolicy)) query.le("submitted_at", cutoff);
+        else query.lt("submitted_at", cutoff);
+        var rows = submissions.selectList(query);
         return Map.of(
                 "frozen",
                 frozen,

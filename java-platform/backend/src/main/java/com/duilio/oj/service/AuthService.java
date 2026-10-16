@@ -191,18 +191,24 @@ public class AuthService {
     }
 
     public static Map<String, Object> publicView(User user) {
-        return Map.of(
-                "id",
-                user.id,
-                "username",
-                user.username,
-                "role",
-                user.role,
-                "school",
-                user.school,
-                "is_online",
-                user.lastSeenAt != null
-                        && user.lastSeenAt.isAfter(Instant.now().minusSeconds(300)));
+        var result =
+                new LinkedHashMap<String, Object>(
+                        Map.of(
+                                "id",
+                                user.id,
+                                "username",
+                                user.username,
+                                "role",
+                                user.role,
+                                "school",
+                                user.school,
+                                "is_online",
+                                user.lastSeenAt != null
+                                        && user.lastSeenAt.isAfter(
+                                                Instant.now().minusSeconds(300))));
+        result.put("date_joined", user.createdAt);
+        result.put("last_seen_at", user.lastSeenAt);
+        return result;
     }
 
     public static Map<String, Object> privateView(User user) {

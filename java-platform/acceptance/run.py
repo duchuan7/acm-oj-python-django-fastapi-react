@@ -119,7 +119,7 @@ class Acceptance:
             text = text.replace(secret,"[REDACTED]")
         (self.work / "report.json").write_text(text,encoding="utf-8")
 
-    def setup(self):
+    def setup(self, empty=False):
         images = {}
         for service, image in {"api":"duilio-oj-java-api:latest","judge":"duilio-oj-java-judge:latest", "web":"duilio-oj-java-web:latest"}.items():
             images[service] = command(["docker","image","inspect",image,"--format","{{.Id}}"])
@@ -128,10 +128,12 @@ class Acceptance:
                     "REDIS_HOST":"redis","REDIS_PORT":"6379","RABBIT_HOST":"rabbit","RABBIT_PORT":"5672","RABBIT_PASSWORD":self.secret}
         api = {**database,"JWT_SECRET":secrets.token_hex(32),"ADMIN_USERNAME":"accept_admin","ADMIN_PASSWORD":self.secret,
                "SEED_DEMO":"false","SMTP_HOST":"mailpit","SMTP_PORT":"1025","SMTP_AUTH":"false","SMTP_SSL":"false", "MAIL_FROM":"acceptance@example.test"}
+        if empty:
+            api.update(BOOTSTRAP_ADMIN="false", OJ_JOBS_ENABLED="false")
         health = lambda cmd: {"test":["CMD-SHELL",cmd],"interval":"2s","timeout":"5s","retries":90}
         ports = lambda port: [{"target":port,"host_ip":"127.0.0.1","published":"0"}]
         config = {"name":self.project,"services":{
-            "mysql":{"image":"mysql:8.4","environment":{"MYSQL_DATABASE":"oj","MYSQL_USER":"oj","MYSQL_PASSWORD":self.secret,"MYSQL_ROOT_PASSWORD":self.secret},"volumes":["mysql_data:/var/lib/mysql"],"command":["--character-set-server=utf8mb4","--collation-server=utf8mb4_0900_ai_ci"],"mem_limit":"768m","healthcheck":health('MYSQL_PWD=$$MYSQL_ROOT_PASSWORD mysqladmin ping -h localhost -u root --silent')},
+            "mysql":{"image":"mysql:8.4","environment":{"MYSQL_DATABASE":"oj","MYSQL_USER":"oj","MYSQL_PASSWORD":self.secret,"MYSQL_ROOT_PASSWORD":self.secret},"volumes":["mysql_data:/var/lib/mysql"],"command":["--character-set-server=utf8mb4","--collation-server=utf8mb4_0900_ai_ci"],"mem_limit":"768m","healthcheck":health("MYSQL_PWD=$$MYSQL_PASSWORD mysql --protocol=TCP -h 127.0.0.1 -u$$MYSQL_USER $$MYSQL_DATABASE -Nse 'SELECT 1'")},
             "redis":{"image":"redis:7-alpine","mem_limit":"128m","healthcheck":health("redis-cli ping")},
             "rabbit":{"image":"rabbitmq:4.3.6-management","environment":{"RABBITMQ_DEFAULT_USER":"oj","RABBITMQ_DEFAULT_PASS":self.secret},"mem_limit":"512m","ports":ports(15672),"healthcheck":health("rabbitmq-diagnostics -q ping")},
             "mailpit":{"image":"axllent/mailpit:v1.29","mem_limit":"96m","ports":ports(8025)},
@@ -139,6 +141,9 @@ class Acceptance:
             "judge":{"image":images["judge"],"environment":{**database,"OJ_MODE":"judge","SPRING_PROFILES_ACTIVE":"judge","SEED_DEMO":"false","BOOTSTRAP_ADMIN":"false","JUDGE_NAMESPACE":self.project},"mem_limit":"512m","volumes":["/var/run/docker.sock:/var/run/docker.sock"],"depends_on":{"api":{"condition":"service_healthy"}}},
             "web":{"image":images["web"],"ports":ports(80),"mem_limit":"96m","depends_on":{"api":{"condition":"service_healthy"}}},
         },"volumes":{"mysql_data":{}}}
+        if empty:
+            config["services"]["api"]["command"] = ["--oj.jobs.enabled=false"]
+            config["services"]["judge"]["profiles"] = ["worker"]
         self.compose_file.write_text(json.dumps(config,indent=2),encoding="utf-8")
         # Only synthetic secrets are written here; legacy migration helpers use this private copy.
         (self.work / ".env").write_text("MYSQL_ROOT_PASSWORD="+self.secret+"\nDB_PASSWORD="+self.secret+"\n",encoding="utf-8")
@@ -152,9 +157,11 @@ class Acceptance:
         self.mail = address("mailpit",8025)
         self.rabbit = address("rabbit",15672)
         self.state.update(base=self.base,web=self.web,mail=self.mail,work=str(self.work))
-        self.admin = self.login("accept_admin")
+        self.admin = None if empty else self.login("accept_admin")
         self.check("isolated environment uses only local test mail", self.compose("exec","-T","api","printenv","SMTP_HOST")=="mailpit")
         for service in ("mysql","redis","rabbit","api","judge","web"):
+            if empty and service == "judge":
+                continue
             ident = self.compose("ps","-q",service)
             info = json.loads(command(["docker","inspect",ident]))[0]
             self.check("owned isolated container: " + service, info["Config"]["Labels"]["com.docker.compose.project"]==self.project)

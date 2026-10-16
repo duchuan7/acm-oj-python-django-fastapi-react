@@ -68,6 +68,10 @@ def replay(test, command, root):
         case_keys=["status","time_used","memory_used","score"]
         test.check("legacy/Java per-case historical verdicts agree",[fields(c,case_keys) for c in old["submission"]["case_results"]]==[fields(c,case_keys) for c in submission["case_results"]])
         test.check("interrupted legacy JUDGING is deliberately imported as PENDING",new("/submissions/503")["verdict"]=="PENDING")
+        for key, ident in [("acm_rank",401),("ioi_rank",404)]:
+            actual=new(f"/contests/{ident}/ranklist")["results"]
+            keys=["rank","user_id","username","solved","score","total_time_ms"]
+            test.check("imported "+key+" preserves original Django standings",[fields(r,keys) for r in old[key]]==[fields(r,keys) for r in actual])
         test.report["differential"]={"source":"generated legacy PostgreSQL fixture", "old_transport":"Django APIClient in original backend image", "new_transport":"real HTTP to separately imported Java API", "compared":"problem/profile/blog/editorial/proposal/submission/case business fields", "expected_differences":["DRF Token versus JWT","field aliases and date formats normalized","interrupted judging requeued","legacy code is write-only in normal API; Java owner source checked against export"]}
         test.report["differential"]["legacy_image"] = command(["docker","image","inspect",legacy_image,"--format","{{.Id}}"])
     finally:

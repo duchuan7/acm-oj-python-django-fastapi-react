@@ -89,10 +89,11 @@ onMounted(() => load().catch(() => {}));
       </div>
       <el-table v-if="session.user" :data="ranks"
         ><el-table-column prop="rank" label="#" width="70" /><el-table-column
-          prop="username"
-          :label="t('用户', 'User')" /><el-table-column
-          prop="solved"
-          :label="t('解题数', 'Solved')" /><el-table-column
+          :label="t('用户', 'User')"
+          ><template #default="{ row }"
+            ><router-link :to="'/users/' + row.user_id">{{ row.username }}</router-link></template
+          ></el-table-column
+        ><el-table-column prop="solved" :label="t('解题数', 'Solved')" /><el-table-column
           v-if="contest.rule === 'IOI'"
           prop="score"
           :label="t('总分', 'Score')" /><el-table-column

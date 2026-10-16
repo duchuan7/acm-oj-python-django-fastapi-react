@@ -69,7 +69,7 @@ def convert(payload):
         f = obj["fields"]
         result.append(insert("contest", dict(id=obj["pk"], title=f["title"], description=f["description"], rule=f["rule"],
             start_at=instant(f["start_at"]), end_at=instant(f["end_at"]), is_public=f["is_public"],
-            freeze_rank_minutes=f["freeze_rank_minutes"], created_by=f["created_by"], created_at=instant(f["created_at"]))))
+            freeze_rank_minutes=f["freeze_rank_minutes"], ranking_policy="LEGACY", created_by=f["created_by"], created_at=instant(f["created_at"]))))
         for uid in f.get("participants", []):
             result.append(insert("contest_participant", dict(contest_id=obj["pk"], user_id=uid)))
     for obj in groups["contests.contestproblem"]:

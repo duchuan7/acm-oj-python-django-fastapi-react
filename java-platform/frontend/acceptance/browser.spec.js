@@ -3,6 +3,92 @@ import fs from 'node:fs';
 
 const state = JSON.parse(fs.readFileSync(process.env.OJ_ACCEPTANCE_STATE, 'utf8'));
 
+test('sample copy preserves input and output, with a visible failure fallback', async ({
+  page,
+  context,
+}) => {
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.goto('/problems/' + state.problems[0].id);
+  for (const field of ['input', 'output']) {
+    await page
+      .getByRole('button', {
+        name: `复制样例 1 ${field === 'input' ? '输入' : '输出'}`,
+        exact: true,
+      })
+      .click();
+    await expect
+      .poll(async () =>
+        (await page.evaluate(() => navigator.clipboard.readText())).replace(/\r\n/g, '\n'),
+      )
+      .toBe(state.problems[0].samples[0][field]);
+  }
+  await page.evaluate(() =>
+    Object.defineProperty(navigator.clipboard, 'writeText', {
+      value: async () => {
+        throw new Error('denied');
+      },
+    }),
+  );
+  await page.getByRole('button', { name: '复制样例 1 输入', exact: true }).click();
+  await expect(page.getByText('复制失败，请手动选择样例复制。', { exact: true })).toBeVisible();
+  await expect(page.locator('.sample-grid pre').first()).toHaveText(
+    state.problems[0].samples[0].input,
+  );
+});
+
+test('contest groups update at start/end boundaries without reloading', async ({ page }) => {
+  const epoch = new Date('2026-01-01T00:00:00Z');
+  await page.clock.install({ time: epoch });
+  const contest = (id, title, start, end) => ({
+    id,
+    title,
+    start_at: new Date(+epoch + start).toISOString(),
+    end_at: new Date(+epoch + end).toISOString(),
+    rule: 'ACM',
+    is_public: true,
+  });
+  const fixtures = [
+    contest(1, 'Live fixture', -60000, 2000),
+    contest(2, 'Next fixture', 1000, 120000),
+    contest(3, 'Past fixture', -120000, -60000),
+  ];
+  await page.route('**/api/contests', (r) => r.fulfill({ json: fixtures }));
+  await page.goto('/contests');
+  await expect(
+    page.getByRole('region', { name: '进行中' }).getByRole('link', { name: /Live fixture/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: '即将开始' }).getByRole('link', { name: /Next fixture/ }),
+  ).toBeVisible();
+  await page.clock.fastForward(3000);
+  await expect(
+    page.getByRole('region', { name: '已结束' }).getByRole('link', { name: /Live fixture/ }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('region', { name: '进行中' }).getByRole('link', { name: /Next fixture/ }),
+  ).toBeVisible();
+  await page.getByRole('button', { name: 'EN', exact: true }).click();
+  await expect(page.getByRole('heading', { name: /^Running/ })).toBeVisible();
+});
+
+test('member directory opens another profile without exposing private account fields', async ({
+  page,
+}) => {
+  await login(page, state.students[0]);
+  const usersResponse = page.waitForResponse((r) => r.url().endsWith('/api/users'));
+  await page.goto('/users/' + state.students[0].id);
+  const users = await (await usersResponse).json();
+  expect(users.every((user) => !('email' in user) && !('real_name' in user))).toBeTruthy();
+  await page.getByRole('combobox', { name: '选择成员' }).click();
+  await page
+    .getByRole('option', { name: state.coaches[0].username + ' (COACH)', exact: true })
+    .click();
+  await expect(
+    page.getByRole('heading', { name: state.coaches[0].username, exact: true }),
+  ).toBeVisible();
+  await expect(page.getByText(/注册时间/)).toBeVisible();
+});
+
 async function login(page, user) {
   await page.goto('/auth');
   await page.getByLabel('Username', { exact: true }).fill(user.username);

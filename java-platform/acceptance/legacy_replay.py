@@ -23,7 +23,8 @@ assert login.status_code==200
 client.credentials(HTTP_AUTHORIZATION="Token "+login.data["token"])
 paths={"problem":"/api/problems/201/","profile":"/api/users/102/profile/",
        "blogs":"/api/blogs/","editorials":"/api/problem-solutions/",
-       "proposals":"/api/problem-proposals/","submission":"/api/submissions/501/"}
+       "proposals":"/api/problem-proposals/","submission":"/api/submissions/501/",
+       "acm_rank":"/api/contests/401/ranklist/","ioi_rank":"/api/contests/404/ranklist/"}
 output={}
 for key,path in paths.items():
     result=client.get(path)

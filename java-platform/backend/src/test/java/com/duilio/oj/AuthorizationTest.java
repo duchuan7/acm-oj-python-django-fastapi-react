@@ -29,7 +29,7 @@ import java.time.Instant;
             "spring.datasource.password=",
             "spring.flyway.enabled=false",
             "spring.sql.init.mode=always",
-            "spring.sql.init.schema-locations=classpath:db/migration/V1__initial.sql,classpath:db/migration/V2__legacy_rank_snapshots.sql,classpath:db/migration/V3__case_result_history.sql",
+            "spring.sql.init.schema-locations=classpath:db/migration/V1__initial.sql,classpath:db/migration/V2__legacy_rank_snapshots.sql,classpath:db/migration/V3__case_result_history.sql,classpath:db/migration/V4__legacy_ranking_policy.sql",
             "oj.jwt-secret=unit-test-secret-with-at-least-32-bytes",
             "oj.admin-password=",
             "oj.seed-demo=false",

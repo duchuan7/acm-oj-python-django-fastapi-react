@@ -3,6 +3,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { api, items } from '../api.js';
 import { t, session } from '../session.js';
+import { ElMessage } from 'element-plus';
 const route = useRoute(),
   router = useRouter(),
   problem = ref(null),
@@ -59,6 +60,16 @@ async function submit() {
 function syncGutter(event) {
   if (gutter.value) gutter.value.scrollTop = event.target.scrollTop;
 }
+async function copySample(text) {
+  try {
+    await navigator.clipboard.writeText(text || '');
+    ElMessage.success(t('已复制', 'Copied'));
+  } catch {
+    ElMessage.error(
+      t('复制失败，请手动选择样例复制。', 'Copy failed. Select the sample to copy it manually.'),
+    );
+  }
+}
 </script>
 <template>
   <section v-if="loading" class="panel" :aria-label="t('正在加载题目', 'Loading problem')">
@@ -113,11 +124,29 @@ function syncGutter(event) {
               ><h3>{{ t('样例', 'Sample') }} {{ i + 1 }}</h3>
               <div class="sample-grid">
                 <div>
-                  <div class="sample-label">{{ t('输入', 'Input') }}</div>
+                  <div class="sample-label">
+                    <span>{{ t('输入', 'Input') }}</span
+                    ><el-button
+                      text
+                      size="small"
+                      :aria-label="t(`复制样例 ${i + 1} 输入`, `Copy sample ${i + 1} input`)"
+                      @click="copySample(s.input)"
+                      >{{ t('复制', 'Copy') }}</el-button
+                    >
+                  </div>
                   <pre>{{ s.input }}</pre>
                 </div>
                 <div>
-                  <div class="sample-label">{{ t('输出', 'Output') }}</div>
+                  <div class="sample-label">
+                    <span>{{ t('输出', 'Output') }}</span
+                    ><el-button
+                      text
+                      size="small"
+                      :aria-label="t(`复制样例 ${i + 1} 输出`, `Copy sample ${i + 1} output`)"
+                      @click="copySample(s.output)"
+                      >{{ t('复制', 'Copy') }}</el-button
+                    >
+                  </div>
                   <pre>{{ s.output }}</pre>
                 </div>
               </div></template
