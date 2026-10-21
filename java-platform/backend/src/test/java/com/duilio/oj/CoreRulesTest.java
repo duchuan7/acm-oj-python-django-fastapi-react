@@ -98,5 +98,35 @@ class CoreRulesTest {
         var row = Rankings.build(c, List.of(a, b), List.of(link), mapper).getFirst();
         assertEquals(30, row.get("score"));
         assertEquals(2, row.get("penalty_minutes"));
+        c.rankingPolicy = "LEGACY";
+        var legacy = Rankings.build(c, List.of(a, b), List.of(link), mapper).getFirst();
+        assertEquals(60, legacy.get("score"));
+        assertEquals(3, legacy.get("penalty_minutes"));
+    }
+
+    @Test
+    void importedContestBreaksTiesByFirstSubmissionInsteadOfUserId() {
+        var c = new Contest();
+        c.rule = "ACM";
+        c.rankingPolicy = "LEGACY";
+        c.startAt = java.time.Instant.EPOCH;
+        var mapper = mock(UserMapper.class);
+        var attempts = new ArrayList<Submission>();
+        for (long uid : new long[] {2, 1}) {
+            var u = new User();
+            u.id = uid;
+            u.username = "user" + uid;
+            when(mapper.selectById(uid)).thenReturn(u);
+            var s = new Submission();
+            s.userId = uid;
+            s.problemId = 1L;
+            s.verdict = "ACCEPTED";
+            s.score = 100;
+            s.submittedAt = c.startAt.plusSeconds(uid == 2 ? 1 : 2);
+            attempts.add(s);
+        }
+        assertEquals(2L, Rankings.build(c, attempts, List.of(), mapper).getFirst().get("user_id"));
+        c.rankingPolicy = "WEIGHTED";
+        assertEquals(1L, Rankings.build(c, attempts, List.of(), mapper).getFirst().get("user_id"));
     }
 }

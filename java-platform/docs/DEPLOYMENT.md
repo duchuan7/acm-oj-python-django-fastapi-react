@@ -132,7 +132,8 @@ Java 代码使用 google-java-format 1.28.0 的 AOSP 风格，
 再让服务器 HTTPS 反向代理转发至 127.0.0.1:5175。
 Compose 的公开端口默认只监听回环地址；数据库、队列和管理页面不直接开放到公网。
 正式发信需在 .env 中设置 SMTP_HOST、SMTP_PORT、SMTP_USER、SMTP_PASSWORD、
-SMTP_STARTTLS、MAIL_FROM，随后重建 API 容器：
+SMTP_AUTH、SMTP_SSL、SMTP_STARTTLS、MAIL_FROM，随后重建 API 容器。
+QQ 邮箱的授权码获取、本地配置与校验见 [QQ 邮箱真实发信](QQ-MAIL.md)。
 
 ~~~bash
 docker compose up -d api

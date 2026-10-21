@@ -1,13 +1,16 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
-import { api, date } from '../api.js';
-import { t } from '../session.js';
+import { useRoute, useRouter } from 'vue-router';
+import { api, date, items } from '../api.js';
+import { t, session } from '../session.js';
 const route = useRoute(),
+  router = useRouter(),
+  users = ref([]),
   data = ref(null);
 onMounted(async () => {
   try {
     data.value = await api('/users/' + route.params.id + '/profile');
+    if (session.user) users.value = items(await api('/users'));
   } catch {}
 });
 </script>
@@ -27,11 +30,29 @@ onMounted(async () => {
       </div>
     </div>
     <div class="toolbar">
+      <el-select
+        v-if="users.length"
+        :model-value="Number(route.params.id)"
+        filterable
+        :aria-label="t('选择成员', 'Select member')"
+        @update:model-value="(id) => router.push('/users/' + id)"
+        ><el-option
+          v-for="u in users"
+          :key="u.id"
+          :value="u.id"
+          :label="u.username + ' (' + u.role + ')'"
+      /></el-select>
       <el-tag>{{ t('解题', 'Solved') }} {{ data.stats?.solved_count || 0 }}</el-tag
       ><el-tag type="info"
         >{{ t('提交', 'Submissions') }} {{ data.stats?.submission_count || 0 }}</el-tag
       >
     </div>
+    <p class="muted">
+      {{ t('注册时间', 'Registered') }} · {{ date(data.user.date_joined)
+      }}<template v-if="!data.user.is_online">
+        · {{ t('最近活跃', 'Last seen') }} · {{ date(data.user.last_seen_at) }}</template
+      >
+    </p>
     <section class="panel">
       <h2>{{ t('最近提交（公开题目）', 'Recent public submissions') }}</h2>
       <el-table :data="data.submissions || []"
@@ -47,7 +68,8 @@ onMounted(async () => {
           ><template #default="{ row }"
             ><span :class="['verdict', row.verdict]">{{ row.verdict }}</span></template
           ></el-table-column
-        ><el-table-column :label="t('时间', 'Time')"
+        ><el-table-column prop="score" :label="t('分数', 'Score')" width="80" /><el-table-column
+          :label="t('时间', 'Time')"
           ><template #default="{ row }">{{ date(row.submitted_at) }}</template></el-table-column
         ></el-table
       >

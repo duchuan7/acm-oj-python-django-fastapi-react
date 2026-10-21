@@ -39,6 +39,15 @@ contest.participants.add(member)
 ContestProblem.objects.create(id=402, contest=contest, problem=problem, alias="A", score=100, order=1)
 accepted = Submission.objects.create(id=501, user=member, problem=problem, contest=contest, language="PYTHON",
     code="print(sum(map(int,input().split())))", code_size=34, verdict="ACCEPTED", score=100, judged_at=timezone.now())
+Submission.objects.filter(pk=501).update(submitted_at=contest.start_at+datetime.timedelta(minutes=5))
+ioi = Contest.objects.create(id=404, title="旧 IOI 比赛", rule="IOI", start_at=contest.start_at,
+    end_at=contest.end_at, is_public=False, created_by=admin)
+ioi.participants.add(member)
+ContestProblem.objects.create(id=405, contest=ioi, problem=problem, alias="A", score=40, order=1)
+for ident, user, score, minute in [(504,member,50,1),(505,admin,100,2),(506,member,20,3)]:
+    Submission.objects.create(id=ident, user=user, problem=problem, contest=ioi, language="PYTHON",
+        code="print(0)", code_size=8, verdict="WRONG_ANSWER" if score<100 else "ACCEPTED", score=score)
+    Submission.objects.filter(pk=ident).update(submitted_at=contest.start_at+datetime.timedelta(minutes=minute))
 SubmissionCaseResult.objects.create(id=601, submission=accepted, case=case, status="ACCEPTED", time_used=12,
     memory_used=5000, exit_code=0, stdout="3\n", stderr="", score=100)
 for ident, verdict in [(502, "PENDING"), (503, "JUDGING")]:

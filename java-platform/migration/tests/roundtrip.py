@@ -58,7 +58,7 @@ def main():
     spec.loader.exec_module(importer)
     names = ["oj_migration_check_" + secrets.token_hex(6) + suffix for suffix in ["", "_bad"]]
     ddl = "\n".join((ROOT / "backend" / "src" / "main" / "resources" / "db" / "migration" / name).read_text(encoding="utf-8")
-        for name in ["V1__initial.sql", "V2__legacy_rank_snapshots.sql", "V3__case_result_history.sql"])
+        for name in ["V1__initial.sql", "V2__legacy_rank_snapshots.sql", "V3__case_result_history.sql", "V4__legacy_ranking_policy.sql"])
     try:
         for database in names:
             assert re.fullmatch(r"oj_migration_check_[0-9a-f]{12}(_bad)?", database)

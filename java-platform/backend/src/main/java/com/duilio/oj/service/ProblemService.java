@@ -61,11 +61,32 @@ public class ProblemService {
         if (tag != null && !tag.isBlank()) q.apply("JSON_CONTAINS(tags, {0})", json.write(tag));
         long count = problems.selectCount(q);
         q.orderByAsc("id").last("LIMIT 30 OFFSET " + ((Math.max(1, page) - 1) * 30L));
+        var pageProblems = problems.selectList(q);
+        var counts = new HashMap<Long, Map<String, Object>>();
+        if (!pageProblems.isEmpty())
+            for (var row : stats.problemStatsBatch(pageProblems.stream().map(p -> p.id).toList())) {
+                counts.put(
+                        ((Number) row.get("problem_id")).longValue(),
+                        Map.of(
+                                "submission_count", row.get("submission_count"),
+                                "accepted_count", row.get("accepted_count")));
+            }
         return Map.of(
                 "count",
                 count,
                 "results",
-                problems.selectList(q).stream().map(p -> view(p, false)).toList());
+                pageProblems.stream()
+                        .map(
+                                p -> {
+                                    var result = json.view(p);
+                                    // The single-problem SUM is NULL for zero submissions. MyBatis
+                                    // omits that key, so preserve the existing JSON response shape.
+                                    result.putAll(
+                                            counts.getOrDefault(
+                                                    p.id, Map.of("submission_count", 0L)));
+                                    return result;
+                                })
+                        .toList());
     }
 
     public Map<String, Object> view(Problem problem, boolean management) {

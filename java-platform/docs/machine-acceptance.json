@@ -1,0 +1,3137 @@
+{
+  "project": "oj-acceptance-22950a43dd",
+  "started_at": "2026-10-15T08:04:50.731843+00:00",
+  "application_commit": "b5d51eeea87fd95759571570dce49533d8542fb4",
+  "stages": [
+    {
+      "name": "isolation",
+      "status": "passed",
+      "seconds": 24.17
+    },
+    {
+      "name": "fixtures",
+      "status": "passed",
+      "seconds": 15.51
+    },
+    {
+      "name": "browser",
+      "status": "passed",
+      "seconds": 13.6
+    },
+    {
+      "name": "contest and judging",
+      "status": "passed",
+      "seconds": 80.32
+    },
+    {
+      "name": "read workload",
+      "status": "passed",
+      "seconds": 0.33
+    },
+    {
+      "name": "fault recovery",
+      "status": "passed",
+      "seconds": 44.18
+    },
+    {
+      "name": "freeze and finish",
+      "status": "passed",
+      "seconds": 175.22
+    },
+    {
+      "name": "data migration",
+      "status": "passed",
+      "seconds": 19.06
+    },
+    {
+      "name": "legacy/Java replay",
+      "status": "passed",
+      "seconds": 17.84
+    }
+  ],
+  "checks": [
+    {
+      "name": "isolated environment uses only local test mail",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: mysql",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: redis",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: rabbit",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: api",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: judge",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: web",
+      "passed": true
+    },
+    {
+      "name": "seeded 1 administrator, 2 coaches, 19 students; final student registers in browser",
+      "passed": true
+    },
+    {
+      "name": "multi-role browser journeys, real registration and network recovery",
+      "passed": true
+    },
+    {
+      "name": "upcoming contest hides problems",
+      "passed": true
+    },
+    {
+      "name": "upcoming submission and member privilege escalation denied",
+      "passed": true
+    },
+    {
+      "name": "contest naturally transitions to running",
+      "passed": true
+    },
+    {
+      "name": "submission 2: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 2: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 3: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 3: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 1: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 1: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 4: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 4: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 6: PYTHON WRONG_ANSWER / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 6: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 5: PYTHON WRONG_ANSWER / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 5: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 7: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 7: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 8: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 8: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 9: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 9: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 10: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 10: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 11: PYTHON WRONG_ANSWER / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 11: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 12: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 12: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 13: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 13: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 15: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 15: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 14: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 14: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 16: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 16: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 17: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 17: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 18: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 18: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 19: PYTHON WRONG_ANSWER / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 19: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 20: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 20: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 21: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 21: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 22: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 22: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 23: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 23: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 24: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 24: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 25: C ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 25: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 26: CPP ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 26: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 27: JAVA ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 27: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 28: CPP COMPILE_ERROR / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 28: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 29: PYTHON RUNTIME_ERROR / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 29: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 30: PYTHON TIME_LIMIT_EXCEEDED / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 30: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 31: PYTHON OUTPUT_LIMIT_EXCEEDED / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 31: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 32: PYTHON MEMORY_LIMIT_EXCEEDED / 0",
+      "passed": true
+    },
+    {
+      "name": "submission 32: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 33: PYTHON WRONG_ANSWER / 50",
+      "passed": true
+    },
+    {
+      "name": "submission 33: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 34: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 34: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 35: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 35: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 36: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 36: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 37: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 37: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 38: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 38: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "all accepted submissions reached expected terminal results",
+      "passed": true
+    },
+    {
+      "name": "ACM member final ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "IOI member final ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "other members cannot read submission source",
+      "passed": true
+    },
+    {
+      "name": "20-client read burst has no errors and P95 below 2000ms",
+      "passed": true
+    },
+    {
+      "name": "broker outage preserves pending submission and outbox",
+      "passed": true
+    },
+    {
+      "name": "submission 39: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 39: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "all accepted submissions reached expected terminal results",
+      "passed": true
+    },
+    {
+      "name": "duplicate messages do not rejudge or duplicate case results",
+      "passed": true
+    },
+    {
+      "name": "submission 40: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 40: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "all accepted submissions reached expected terminal results",
+      "passed": true
+    },
+    {
+      "name": "interrupted worker lease is retried after injected expiration",
+      "passed": true
+    },
+    {
+      "name": "sessions and submission results survive API restart",
+      "passed": true
+    },
+    {
+      "name": "freeze phase reached before contest ends",
+      "passed": true
+    },
+    {
+      "name": "submission 41: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 41: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "all accepted submissions reached expected terminal results",
+      "passed": true
+    },
+    {
+      "name": "ACM member frozen ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "ACM staff frozen ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "IOI member frozen ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "ACM member final ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "IOI member final ranking matches independent fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "contest naturally ends, unfreezes, and rejects late submissions",
+      "passed": true
+    },
+    {
+      "name": "12 real PostgreSQL to MySQL migration and rollback checks",
+      "passed": true
+    },
+    {
+      "name": "Django password authenticates through Java API and upgrades to BCrypt",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java problem fields, Unicode and samples agree",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java public profile statistics agree",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java blogs business fields agree",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java editorials business fields agree",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java proposals business fields agree",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java accepted submission business fields agree",
+      "passed": true
+    },
+    {
+      "name": "Java owner source view preserves exported legacy code",
+      "passed": true
+    },
+    {
+      "name": "legacy/Java per-case historical verdicts agree",
+      "passed": true
+    },
+    {
+      "name": "interrupted legacy JUDGING is deliberately imported as PENDING",
+      "passed": true
+    }
+  ],
+  "scope": "Synthetic users and isolated Compose project; not production cutover or a security proof.",
+  "source_diff_sha256": "8f21fe84976c7b8a4d4f74af074fe853984a6686be54392a3cb6a6a7d78adbc4",
+  "mode": "full",
+  "images": {
+    "api": "sha256:70a17f50d5b55c2cf069f4ba6132a55933f57028998b4a525be8e7c588757ce5",
+    "judge": "sha256:313e3c579661e02c277a418fd25137b7d79c8b07ea95e58b93dc757ec490ca72",
+    "web": "sha256:9d6f2be444df6141d967b2d553e9660696ed83ca7a657be44a840d6535d66980"
+  },
+  "attempts": [
+    {
+      "id": 3,
+      "user_id": 8,
+      "problem_id": 5,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.219669214Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 12.16
+    },
+    {
+      "id": 2,
+      "user_id": 6,
+      "problem_id": 3,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.217210641Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 60,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 8.02
+    },
+    {
+      "id": 4,
+      "user_id": 5,
+      "problem_id": 2,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.218872258Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 20.64
+    },
+    {
+      "id": 5,
+      "user_id": 4,
+      "problem_id": 1,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.223860334Z",
+      "expected_verdict": "WRONG_ANSWER",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "WRONG_ANSWER",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 0,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        },
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 28.74
+    },
+    {
+      "id": 9,
+      "user_id": 17,
+      "problem_id": 2,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.230687909Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 34.73
+    },
+    {
+      "id": 6,
+      "user_id": 9,
+      "problem_id": 6,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.223916507Z",
+      "expected_verdict": "WRONG_ANSWER",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "WRONG_ANSWER",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        },
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 24.31
+    },
+    {
+      "id": 10,
+      "user_id": 16,
+      "problem_id": 1,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.230905562Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 35.63
+    },
+    {
+      "id": 8,
+      "user_id": 12,
+      "problem_id": 3,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.228620572Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 33.01
+    },
+    {
+      "id": 1,
+      "user_id": 7,
+      "problem_id": 4,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.219369435Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8000,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 16.12
+    },
+    {
+      "id": 7,
+      "user_id": 10,
+      "problem_id": 1,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.226306371Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 32.14
+    },
+    {
+      "id": 11,
+      "user_id": 14,
+      "problem_id": 5,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.280373632Z",
+      "expected_verdict": "WRONG_ANSWER",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "WRONG_ANSWER",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        },
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8000,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 37.31
+    },
+    {
+      "id": 12,
+      "user_id": 11,
+      "problem_id": 2,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.299632658Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 38.18
+    },
+    {
+      "id": 20,
+      "user_id": 22,
+      "problem_id": 1,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.306233310Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 48.59
+    },
+    {
+      "id": 16,
+      "user_id": 20,
+      "problem_id": 5,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.305247265Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 43.53
+    },
+    {
+      "id": 13,
+      "user_id": 18,
+      "problem_id": 3,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.299905638Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 39.77
+    },
+    {
+      "id": 17,
+      "user_id": 21,
+      "problem_id": 6,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.305675925Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 44.98
+    },
+    {
+      "id": 19,
+      "user_id": 19,
+      "problem_id": 4,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.305506646Z",
+      "expected_verdict": "WRONG_ANSWER",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "WRONG_ANSWER",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8000,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        },
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 47.18
+    },
+    {
+      "id": 15,
+      "user_id": 15,
+      "problem_id": 6,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.302444002Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 41.21
+    },
+    {
+      "id": 18,
+      "user_id": 23,
+      "problem_id": 2,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.305793484Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 46.46
+    },
+    {
+      "id": 14,
+      "user_id": 13,
+      "problem_id": 4,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:52.301408797Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 42.07
+    },
+    {
+      "id": 21,
+      "user_id": 4,
+      "problem_id": 1,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:53.554119410Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 48.67
+    },
+    {
+      "id": 22,
+      "user_id": 9,
+      "problem_id": 6,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:53.681570585Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 49.89
+    },
+    {
+      "id": 23,
+      "user_id": 14,
+      "problem_id": 5,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:53.848101543Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 51.1
+    },
+    {
+      "id": 24,
+      "user_id": 19,
+      "problem_id": 4,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:05:54.003030725Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 52.32
+    },
+    {
+      "id": 25,
+      "user_id": 5,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.162192063Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "C",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 1920,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 1920,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 53.35
+    },
+    {
+      "id": 26,
+      "user_id": 6,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.227175677Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "CPP",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 2720,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 3520,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 54.56
+    },
+    {
+      "id": 27,
+      "user_id": 7,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.354279357Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "JAVA",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 50,
+          "memory_used": 39464,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 50,
+          "memory_used": 39200,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 56.4
+    },
+    {
+      "id": 28,
+      "user_id": 11,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.553556454Z",
+      "expected_verdict": "COMPILE_ERROR",
+      "expected_score": 0,
+      "language": "CPP",
+      "actual_verdict": "COMPILE_ERROR",
+      "actual_score": 0,
+      "cases": [],
+      "end_to_end_seconds": 56.86
+    },
+    {
+      "id": 29,
+      "user_id": 12,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.649035888Z",
+      "expected_verdict": "RUNTIME_ERROR",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "RUNTIME_ERROR",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "RUNTIME_ERROR",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 1,
+          "stderr": "Traceback (most recent call last):\n  File \"/work/main.py\", line 1, in <module>\n    raise RuntimeError('fixture')\nRuntimeError: fixture\nCommand exited with non-zero status 1",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 57.92
+    },
+    {
+      "id": 30,
+      "user_id": 13,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:54.784538800Z",
+      "expected_verdict": "TIME_LIMIT_EXCEEDED",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "TIME_LIMIT_EXCEEDED",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "TIME_LIMIT_EXCEEDED",
+          "time_used": 1000,
+          "memory_used": 8160,
+          "exit_code": 124,
+          "stderr": "Command exited with non-zero status 124",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 59.61
+    },
+    {
+      "id": 31,
+      "user_id": 14,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:55.089653499Z",
+      "expected_verdict": "OUTPUT_LIMIT_EXCEEDED",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "OUTPUT_LIMIT_EXCEEDED",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "OUTPUT_LIMIT_EXCEEDED",
+          "time_used": 10,
+          "memory_used": 9120,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 59.88
+    },
+    {
+      "id": 32,
+      "user_id": 15,
+      "problem_id": 8,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:05:55.156108005Z",
+      "expected_verdict": "MEMORY_LIMIT_EXCEEDED",
+      "expected_score": 0,
+      "language": "PYTHON",
+      "actual_verdict": "MEMORY_LIMIT_EXCEEDED",
+      "actual_score": 0,
+      "cases": [
+        {
+          "status": "MEMORY_LIMIT_EXCEEDED",
+          "time_used": 80,
+          "memory_used": 70240,
+          "exit_code": 137,
+          "stderr": "Command terminated by signal 9",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 60.98
+    },
+    {
+      "id": 33,
+      "user_id": 16,
+      "problem_id": 1,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:55.256150208Z",
+      "expected_verdict": "WRONG_ANSWER",
+      "expected_score": 50,
+      "language": "PYTHON",
+      "actual_verdict": "WRONG_ANSWER",
+      "actual_score": 50,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8000,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "WRONG_ANSWER",
+          "time_used": 20,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 0
+        }
+      ],
+      "end_to_end_seconds": 62.07
+    },
+    {
+      "id": 34,
+      "user_id": 17,
+      "problem_id": 1,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:55.351492738Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 63.69
+    },
+    {
+      "id": 35,
+      "user_id": 18,
+      "problem_id": 1,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:55.415612734Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 64.72
+    },
+    {
+      "id": 36,
+      "user_id": 16,
+      "problem_id": 2,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:56.650510546Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 64.59
+    },
+    {
+      "id": 37,
+      "user_id": 17,
+      "problem_id": 2,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:56.762904795Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8000,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 66.08
+    },
+    {
+      "id": 38,
+      "user_id": 18,
+      "problem_id": 2,
+      "contest_id": 2,
+      "submitted_at": "2026-10-15T08:05:56.932718291Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 67.46
+    },
+    {
+      "id": 39,
+      "user_id": 20,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:07:06.648105739Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 13.55
+    },
+    {
+      "id": 40,
+      "user_id": 21,
+      "problem_id": 1,
+      "contest_id": null,
+      "submitted_at": "2026-10-15T08:07:24.959848273Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 810,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 810,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 16.86
+    },
+    {
+      "id": 41,
+      "user_id": 4,
+      "problem_id": 6,
+      "contest_id": 1,
+      "submitted_at": "2026-10-15T08:09:44.737158362Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8160,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 3.93
+    }
+  ],
+  "rank_comparisons": [
+    {
+      "rule": "ACM",
+      "contest_id": 1,
+      "frozen": false,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ]
+    },
+    {
+      "rule": "IOI",
+      "contest_id": 2,
+      "frozen": false,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ]
+    },
+    {
+      "rule": "ACM",
+      "contest_id": 1,
+      "frozen": true,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ]
+    },
+    {
+      "rule": "ACM",
+      "contest_id": 1,
+      "frozen": true,
+      "staff": true,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 4,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ]
+    },
+    {
+      "rule": "IOI",
+      "contest_id": 2,
+      "frozen": true,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ]
+    },
+    {
+      "rule": "ACM",
+      "contest_id": 1,
+      "frozen": false,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 4,
+          "solved": 2,
+          "score": 0,
+          "penalty_minutes": 23
+        },
+        {
+          "rank": 2,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 4,
+          "solved": 2,
+          "score": 0,
+          "penalty_minutes": 23
+        },
+        {
+          "rank": 2,
+          "user_id": 5,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 6,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 4,
+          "user_id": 7,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 5,
+          "user_id": 8,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 6,
+          "user_id": 10,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 7,
+          "user_id": 11,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 8,
+          "user_id": 12,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 9,
+          "user_id": 13,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 10,
+          "user_id": 15,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 11,
+          "user_id": 16,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 12,
+          "user_id": 17,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 13,
+          "user_id": 18,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 14,
+          "user_id": 20,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 15,
+          "user_id": 21,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 16,
+          "user_id": 22,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 17,
+          "user_id": 23,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 18,
+          "user_id": 9,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 19,
+          "user_id": 14,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        },
+        {
+          "rank": 20,
+          "user_id": 19,
+          "solved": 1,
+          "score": 0,
+          "penalty_minutes": 20
+        }
+      ]
+    },
+    {
+      "rule": "IOI",
+      "contest_id": 2,
+      "frozen": false,
+      "staff": false,
+      "expected": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ],
+      "actual": [
+        {
+          "rank": 1,
+          "user_id": 17,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 2,
+          "user_id": 18,
+          "solved": 2,
+          "score": 100,
+          "penalty_minutes": 0
+        },
+        {
+          "rank": 3,
+          "user_id": 16,
+          "solved": 2,
+          "score": 80,
+          "penalty_minutes": 0
+        }
+      ]
+    }
+  ],
+  "judge_load": {
+    "virtual_students": 20,
+    "submissions": 38,
+    "end_to_end_p50_s": 47.89,
+    "end_to_end_max_s": 67.46,
+    "worker_count": 1
+  },
+  "read_load": {
+    "requests": 400,
+    "clients": 20,
+    "errors": 0,
+    "p95_ms": 27.52,
+    "acceptance_p95_ms": 2000
+  },
+  "lease_fault": "Actual worker SIGKILL; expiration injected only in disposable test DB; real recovery scheduler and queue used.",
+  "contest_phases": "Natural wall-clock upcoming/running/frozen/ended; start and end were not changed after creation.",
+  "migration": {
+    "suite": "migration/tests/roundtrip.py",
+    "checks": 12,
+    "source": "generated PostgreSQL fixture, never the user's old DB"
+  },
+  "differential": {
+    "source": "generated legacy PostgreSQL fixture",
+    "old_transport": "Django APIClient in original backend image",
+    "new_transport": "real HTTP to separately imported Java API",
+    "compared": "problem/profile/blog/editorial/proposal/submission/case business fields",
+    "expected_differences": [
+      "DRF Token versus JWT",
+      "field aliases and date formats normalized",
+      "interrupted judging requeued",
+      "legacy code is write-only in normal API; Java owner source checked against export"
+    ],
+    "legacy_image": "sha256:b116caee57007534bb8fa7c17d97712a5948840852b955020d8e3a634a188f8a"
+  },
+  "cleanup": "owned test resources removed",
+  "success": true,
+  "finished_at": "2026-10-15T08:11:26.446574+00:00"
+}

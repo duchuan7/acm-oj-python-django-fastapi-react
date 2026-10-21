@@ -1,0 +1,463 @@
+{
+  "project": "oj-acceptance-032e4bbf15",
+  "started_at": "2026-10-20T06:34:52.134451+00:00",
+  "application_commit": "f5059b6a5f1d7613bc709dc9d37d9029128335fc",
+  "stages": [
+    {
+      "name": "source cold backups",
+      "status": "passed",
+      "seconds": 2.25
+    },
+    {
+      "name": "isolated Linux target",
+      "status": "passed",
+      "seconds": 27.52
+    },
+    {
+      "name": "restore old deployment",
+      "status": "passed",
+      "seconds": 13.28
+    },
+    {
+      "name": "real data migration",
+      "status": "passed",
+      "seconds": 22.2
+    },
+    {
+      "name": "test login",
+      "status": "passed",
+      "seconds": 2.33
+    },
+    {
+      "name": "historical standings",
+      "status": "passed",
+      "seconds": 1.74
+    },
+    {
+      "name": "MySQL restore drill",
+      "status": "passed",
+      "seconds": 20.98
+    },
+    {
+      "name": "four-language judging and short soak",
+      "status": "passed",
+      "seconds": 320.44
+    },
+    {
+      "name": "entrypoint switch and rollback",
+      "status": "passed",
+      "seconds": 17.85
+    }
+  ],
+  "checks": [
+    {
+      "name": "cold PostgreSQL and testcase backups created through read-only source mounts",
+      "passed": true
+    },
+    {
+      "name": "isolated environment uses only local test mail",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: mysql",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: redis",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: rabbit",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: api",
+      "passed": true
+    },
+    {
+      "name": "owned isolated container: web",
+      "passed": true
+    },
+    {
+      "name": "cold source backups restore into an independent working PostgreSQL and legacy API",
+      "passed": true
+    },
+    {
+      "name": "real legacy snapshot dry-run leaves target empty",
+      "passed": true
+    },
+    {
+      "name": "imported rows 1-25 preserve all converted fields",
+      "passed": true
+    },
+    {
+      "name": "all migrated model and relationship counts match the source conversion",
+      "passed": true
+    },
+    {
+      "name": "isolated imported deployment supports fresh registration through test email",
+      "passed": true
+    },
+    {
+      "name": "real historical contest 1 retains original standings",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in oj_user",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in problem",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in test_case",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in contest",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in contest_participant",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in contest_problem",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in submission",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in case_result",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in judge_outbox",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in problem_proposal",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in problem_solution",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in blog_post",
+      "passed": true
+    },
+    {
+      "name": "backup restore preserves complete rows in contest_rank_snapshot",
+      "passed": true
+    },
+    {
+      "name": "web proxy still reaches API after API container replacement",
+      "passed": true
+    },
+    {
+      "name": "submission 5: C ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 5: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 6: CPP ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 6: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 7: JAVA ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 7: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "submission 8: PYTHON ACCEPTED / 100",
+      "passed": true
+    },
+    {
+      "name": "submission 8: case results are unique",
+      "passed": true
+    },
+    {
+      "name": "all accepted submissions reached expected terminal results",
+      "passed": true
+    },
+    {
+      "name": "configured local soak has no errors and P95 below 2000ms",
+      "passed": true
+    },
+    {
+      "name": "isolated entrypoint initially serves the restored legacy API",
+      "passed": true
+    },
+    {
+      "name": "legacy browser uses the rehearsal gateway without JavaScript errors",
+      "passed": true
+    },
+    {
+      "name": "maintenance blocks entrypoint requests with Retry-After",
+      "passed": true
+    },
+    {
+      "name": "same isolated entrypoint switches to the imported Java API",
+      "passed": true
+    },
+    {
+      "name": "java browser uses the rehearsal gateway without JavaScript errors",
+      "passed": true
+    },
+    {
+      "name": "20-client read burst has no errors and P95 below 2000ms",
+      "passed": true
+    },
+    {
+      "name": "rollback returns the same entrypoint to unchanged legacy problem data",
+      "passed": true
+    },
+    {
+      "name": "rollback browser uses the rehearsal gateway without JavaScript errors",
+      "passed": true
+    },
+    {
+      "name": "source PostgreSQL remains stopped after the rehearsal",
+      "passed": true
+    }
+  ],
+  "scope": "Local Docker Linux rehearsal only; no external server, DNS, production ingress or original database switch.",
+  "source_diff_sha256": "db32f9cce872157b0cab94113a563f6d09c0bb465fda5f92e1f10dd34043a815",
+  "mode": "real local legacy data rehearsal",
+  "source": {
+    "database_container": "acmoj-db",
+    "volumes": {
+      "postgres": "acmoj_postgres_data",
+      "testcases": "acmoj_testcase_data"
+    },
+    "database_was_stopped": true
+  },
+  "backup_sha256": {
+    "postgres": "010a1800f2702ae6e57d50bfc6a762205c2fc05ceb2e87d358ff3c0c3aa1d9e7",
+    "testcases": "486661a3e01ef3e52b1429f3117941df80124b35a9da34cc60f0bb09ea08cdda"
+  },
+  "attempts": [
+    {
+      "id": 5,
+      "user_id": 3,
+      "problem_id": 3,
+      "contest_id": null,
+      "submitted_at": "2026-10-20T06:36:34.011615097Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "C",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 1760,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 1920,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 4.11
+    },
+    {
+      "id": 6,
+      "user_id": 3,
+      "problem_id": 3,
+      "contest_id": null,
+      "submitted_at": "2026-10-20T06:36:35.155979136Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "CPP",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 3040,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 0,
+          "memory_used": 3360,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 4.6
+    },
+    {
+      "id": 7,
+      "user_id": 3,
+      "problem_id": 3,
+      "contest_id": null,
+      "submitted_at": "2026-10-20T06:36:36.291184991Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "JAVA",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 50,
+          "memory_used": 39444,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 50,
+          "memory_used": 39596,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 5.61
+    },
+    {
+      "id": 8,
+      "user_id": 3,
+      "problem_id": 3,
+      "contest_id": null,
+      "submitted_at": "2026-10-20T06:36:37.425455548Z",
+      "expected_verdict": "ACCEPTED",
+      "expected_score": 100,
+      "language": "PYTHON",
+      "actual_verdict": "ACCEPTED",
+      "actual_score": 100,
+      "cases": [
+        {
+          "status": "ACCEPTED",
+          "time_used": 10,
+          "memory_used": 8320,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        },
+        {
+          "status": "ACCEPTED",
+          "time_used": 20,
+          "memory_used": 8480,
+          "exit_code": 0,
+          "stderr": "",
+          "score": 50
+        }
+      ],
+      "end_to_end_seconds": 6.05
+    }
+  ],
+  "images": {
+    "api": "sha256:cbdfc11a992b623dceffdb51f71b6320befb8bc1b180c24a8e832beb1ee003c7",
+    "judge": "sha256:05652cfe6de61ca7d8430dfa4253e969b741fc005da661f08f02c080e6922da8",
+    "web": "sha256:89778bfd12caeec862b57c54211a3a161e3ee9179d2447057e67e70fc43ee291"
+  },
+  "legacy_models": {
+    "accounts.user": 2,
+    "problems.problem": 2,
+    "problems.testcase": 2,
+    "contests.contest": 1,
+    "contests.contestproblem": 1,
+    "submissions.submission": 4,
+    "submissions.submissioncaseresult": 8,
+    "problems.problemproposal": 1,
+    "problems.problemsolution": 1,
+    "blogs.blogpost": 3
+  },
+  "snapshot_sha256": "d47a6d791815d0258c669e1fd4f3cc2e0e9df640ee57179b209c59bf1863e7bf",
+  "imported_tables": {
+    "oj_user": 2,
+    "problem": 2,
+    "test_case": 2,
+    "contest": 1,
+    "contest_participant": 0,
+    "contest_problem": 1,
+    "submission": 4,
+    "case_result": 8,
+    "judge_outbox": 0,
+    "problem_proposal": 1,
+    "problem_solution": 1,
+    "blog_post": 3,
+    "contest_rank_snapshot": 0
+  },
+  "legacy_password_login": "configured demo credential does not match the real account; hashes preserved exactly, generated legacy-login regression covers compatibility",
+  "historical_ranklists_compared": 1,
+  "mysql_restore": {
+    "dump_sha256": "a01c163489f918673eab1f33044b40e3d32847f5eae4f7e3a805687855e2f53d",
+    "table_sha256": {
+      "oj_user": "9372fd71bb681c9fb7046264efa77ef5acb69c54ffe0a6bb31285a7b52e3e436",
+      "problem": "6127039d599ab2dadbfe3c7f171f2b3a040a2602dd4d31cf8375e0f8a1c07f25",
+      "test_case": "249961670bef566308673bba6bee805fe0e2819565d3d54dca60b789e395e450",
+      "contest": "6244d6b47f9ca1ed1cc8de9b3f28ee91e72300e6a198252f29395dcb49b75445",
+      "contest_participant": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "contest_problem": "cd644b1c01e6b5761173eae328f8a3f6f4bb85fdacdc089de1142e52395e0c79",
+      "submission": "858f9366cfb53ccde6e59ce5c0a1519808d42bc80ff1f3391825c5d55c1fe15e",
+      "case_result": "682d33afa81e6a10a490ee914908f144e2b25160422ddbf32488083c19d95905",
+      "judge_outbox": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "problem_proposal": "cd7942b4bf7610fe9bdd2f82855da15002a117a231e8c30c96a2b9c6bd66a7e1",
+      "problem_solution": "f0c4e0c3c0c1e22961e8243b5e4f51c0fc3be823b5e3a563fbfbec09607885c5",
+      "blog_post": "04beef67dbc8b871dd5f59447111bbcd9ed3a8f7b6d9d6ca2adcf747b8f1a340",
+      "contest_rank_snapshot": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "stability": {
+    "duration_seconds": 300.12,
+    "requests": 3000,
+    "concurrent_clients": 10,
+    "errors": 0,
+    "p95_ms": 30.48,
+    "scope": "short local soak; not multi-day production evidence"
+  },
+  "read_load": {
+    "requests": 400,
+    "clients": 20,
+    "errors": 0,
+    "p95_ms": 19.32,
+    "acceptance_p95_ms": 2000
+  },
+  "cutover": {
+    "scope": "isolated loopback gateway only",
+    "sequence": [
+      "legacy",
+      "maintenance",
+      "java",
+      "maintenance",
+      "legacy rollback",
+      "java"
+    ],
+    "original_entrypoints_changed": false
+  },
+  "cleanup": "owned test resources removed; private backups retained",
+  "success": true,
+  "finished_at": "2026-10-20T06:42:07.231232+00:00",
+  "cleanup_verified_at": "2026-10-20T06:44:57.833049+00:00"
+}

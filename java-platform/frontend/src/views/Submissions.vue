@@ -123,19 +123,40 @@ onUnmounted(() => clearInterval(timer));
     :title="t('提交详情', 'Submission detail') + ' #' + detail?.id"
     width="850px"
     ><template v-if="detail"
-      ><div class="toolbar">
+      ><div class="submission-summary">
         <span :class="['verdict', detail.verdict]">{{ detail.verdict }}</span
         ><span>{{ detail.score }} / 100</span><span>{{ date(detail.submitted_at) }}</span>
       </div>
+      <div class="detail-metrics">
+        <span
+          >{{ t('用时', 'Time') }}<b>{{ detail.max_time_ms ?? '—' }} ms</b></span
+        ><span
+          >{{ t('内存', 'Memory') }}<b>{{ detail.max_memory_kb ?? '—' }} KiB</b></span
+        ><span
+          >{{ t('语言', 'Language') }}<b>{{ detail.language }}</b></span
+        >
+      </div>
+      <h3 v-if="detail.compile_message">{{ t('编译信息', 'Compiler output') }}</h3>
       <pre v-if="detail.compile_message">{{ detail.compile_message }}</pre>
       <el-table :data="detail.case_results"
-        ><el-table-column prop="status" label="Verdict" /><el-table-column
-          prop="time_used"
-          label="ms" /><el-table-column prop="memory_used" label="KiB" /><el-table-column
-          prop="score"
-          label="Score"
+        ><el-table-column prop="status" label="Verdict" min-width="200"
+          ><template #default="{ row }"
+            ><span :class="['verdict', row.status]">{{ row.status }}</span></template
+          ></el-table-column
+        ><el-table-column prop="time_used" label="ms" /><el-table-column
+          prop="memory_used"
+          label="KiB" /><el-table-column prop="score" label="Score"
       /></el-table>
-      <pre>{{ detail.code }}</pre>
+      <h3>{{ t('提交的代码', 'Source code') }}</h3>
+      <pre v-if="detail.code">{{ detail.code }}</pre>
+      <p v-else class="subtitle">
+        {{
+          t(
+            '源码仅对作者及有权限的成员展示。',
+            'Source code is available to its author and authorized members.',
+          )
+        }}
+      </p>
     </template></el-dialog
   >
 </template>

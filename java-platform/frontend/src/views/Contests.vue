@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { api, items, date } from '../api.js';
 import { session, t } from '../session.js';
@@ -9,6 +9,32 @@ const rows = ref([]),
   open = ref(false),
   busy = ref(false),
   router = useRouter();
+const now = ref(Date.now());
+const groups = computed(() => [
+  {
+    key: 'running',
+    title: t('进行中', 'Running'),
+    rows: rows.value.filter(
+      (c) =>
+        new Date(c.start_at).getTime() <= now.value && now.value < new Date(c.end_at).getTime(),
+    ),
+  },
+  {
+    key: 'upcoming',
+    title: t('即将开始', 'Upcoming'),
+    rows: rows.value
+      .filter((c) => now.value < new Date(c.start_at).getTime())
+      .sort((a, b) => new Date(a.start_at) - new Date(b.start_at)),
+  },
+  {
+    key: 'ended',
+    title: t('已结束', 'Ended'),
+    rows: rows.value
+      .filter((c) => now.value >= new Date(c.end_at).getTime())
+      .sort((a, b) => new Date(b.end_at) - new Date(a.end_at)),
+  },
+]);
+let clock;
 const draft = ref({
   title: '',
   description: '',
@@ -35,7 +61,13 @@ async function save() {
     busy.value = false;
   }
 }
-onMounted(() => load().catch(() => {}));
+onMounted(() => {
+  load().catch(() => {});
+  clock = setInterval(() => {
+    now.value = Date.now();
+  }, 1000);
+});
+onUnmounted(() => clearInterval(clock));
 </script>
 <template>
   <div class="page-heading">
@@ -61,7 +93,24 @@ onMounted(() => load().catch(() => {}));
       /></el-select>
     </div>
     <el-empty v-if="!rows.length" :description="t('暂无可见比赛', 'No contests available')" />
-    <router-link v-for="c in rows" :key="c.id" :to="'/contests/' + c.id" class="list-card"
+  </section>
+  <section
+    v-for="group in groups"
+    :key="group.key"
+    class="panel"
+    :aria-labelledby="'contest-' + group.key"
+  >
+    <div class="section-heading">
+      <h2 :id="'contest-' + group.key">
+        {{ group.title }}<span class="count-badge">{{ group.rows.length }}</span>
+      </h2>
+    </div>
+    <el-empty
+      v-if="!group.rows.length"
+      :description="t('暂无比赛', 'No contests')"
+      :image-size="48"
+    />
+    <router-link v-for="c in group.rows" :key="c.id" :to="'/contests/' + c.id" class="list-card"
       ><div>
         <h3>{{ c.title }}</h3>
         <span class="muted">{{ date(c.start_at) }} → {{ date(c.end_at) }}</span>

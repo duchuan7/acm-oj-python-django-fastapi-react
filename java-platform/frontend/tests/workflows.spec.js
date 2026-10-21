@@ -95,9 +95,12 @@ test('code submission reaches Accepted without manually refreshing', async ({ pa
     .fill('#include <iostream>\nint main(){long long a,b;std::cin>>a>>b;std::cout<<a+b<<"\\n";}');
   await page.getByRole('button', { name: '提交评测', exact: true }).click();
   await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog').locator('.verdict')).toHaveText('ACCEPTED', {
-    timeout: 75000,
-  });
+  await expect(page.getByRole('dialog').locator('.submission-summary .verdict')).toHaveText(
+    'ACCEPTED',
+    {
+      timeout: 75000,
+    },
+  );
   await expect(page.getByRole('dialog').getByText('100 / 100')).toBeVisible();
 });
 
@@ -212,10 +215,104 @@ test('an existing proposal can be edited from the workspace', async ({ page, req
 
 test('mobile layout fits the viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
+  await authenticate(page);
+  for (const url of [
+    '/',
+    '/problems/1',
+    '/auth',
+    '/contests',
+    '/community',
+    '/submissions',
+    '/workspace',
+    '/admin',
+    '/users/1',
+  ]) {
+    await page.goto(url);
+    await expect(page.locator('h1')).toBeVisible();
+    expect(
+      await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
+      url,
+    ).toBeTruthy();
+  }
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: '从一道题开始。' })).toBeVisible();
-  expect(
-    await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1),
-  ).toBeTruthy();
   await page.screenshot({ path: path.join(root, '.runtime', 'mobile.png'), fullPage: true });
+});
+
+test('reading and coding stay side by side on desktop and stack on a phone', async ({ page }) => {
+  await page.goto('/problems/1');
+  const statement = page.locator('.statement-panel');
+  const editor = page.locator('.editor-panel');
+  await expect(statement).toBeVisible();
+  const left = await statement.boundingBox(),
+    right = await editor.boundingBox();
+  expect(right.x).toBeGreaterThanOrEqual(left.x + left.width);
+  const source = page.getByLabel('Source code');
+  await source.fill(Array.from({ length: 80 }, (_, i) => '// line ' + (i + 1)).join('\n'));
+  await source.evaluate((el) => {
+    el.scrollTop = 400;
+    el.dispatchEvent(new Event('scroll'));
+  });
+  await expect.poll(() => page.locator('.line-numbers').evaluate((el) => el.scrollTop)).toBe(400);
+  await page.setViewportSize({ width: 390, height: 844 });
+  const top = await statement.boundingBox(),
+    bottom = await editor.boundingBox();
+  expect(bottom.y).toBeGreaterThan(top.y + top.height);
+  expect((await page.locator('.editorials-panel').boundingBox()).y).toBeGreaterThan(
+    bottom.y + bottom.height,
+  );
+  await expect(source).toHaveValue(/\/\/ line 80$/);
+});
+
+test('problem archive distinguishes a load failure from an empty search and can retry', async ({
+  page,
+}) => {
+  let fail = true;
+  await page.route(/\/api\/problems\?/, (route) =>
+    fail
+      ? route.fulfill({ status: 503, json: { message: 'Temporarily unavailable' } })
+      : route.continue(),
+  );
+  await page.goto('/');
+  await expect(page.getByText('题目加载失败，请稍后重试。')).toBeVisible();
+  fail = false;
+  await page.getByRole('button', { name: '重试', exact: true }).click();
+  await expect(page.getByRole('link', { name: 'A + B', exact: true })).toBeVisible();
+  await page.getByPlaceholder('搜索题目、来源').fill('no-such-problem-visual-check');
+  await page.getByPlaceholder('搜索题目、来源').press('Enter');
+  await expect(page.getByText('没有找到匹配的题目，试试其他筛选条件。')).toBeVisible();
+});
+
+test('verification email shows progress and recovers from a sending failure', async ({ page }) => {
+  const errors = [];
+  page.on('pageerror', (error) => errors.push(error.message));
+  let release;
+  const pending = new Promise((resolve) => {
+    release = resolve;
+  });
+  let calls = 0;
+  await page.route('**/api/auth/registration-code', async (route) => {
+    calls++;
+    if (calls === 1) {
+      await pending;
+      await route.fulfill({ status: 200, json: { detail: 'Verification email sent' } });
+    } else {
+      await route.fulfill({ status: 503, json: { detail: 'Email service unavailable' } });
+    }
+  });
+  await page.goto('/auth');
+  await page.getByRole('tab', { name: '注册', exact: true }).click();
+  await page.getByLabel('Email', { exact: true }).fill('browser-mail@example.test');
+  await page.getByRole('button', { name: '发送验证码', exact: true }).click();
+  await expect(page.getByRole('button', { name: '发送中…', exact: true })).toBeDisabled();
+  expect(calls).toBe(1);
+  release();
+  await expect(
+    page.getByText('验证码已发送，请查看收件箱或垃圾邮件', { exact: true }),
+  ).toBeVisible();
+  const send = page.getByRole('button', { name: '发送验证码', exact: true });
+  await expect(send).toBeEnabled();
+  await send.click();
+  await expect(page.getByText('Email service unavailable', { exact: true })).toBeVisible();
+  await expect(send).toBeEnabled();
+  expect(errors).toEqual([]);
 });

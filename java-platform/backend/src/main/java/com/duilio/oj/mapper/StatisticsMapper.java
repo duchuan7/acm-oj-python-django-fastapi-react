@@ -34,4 +34,16 @@ public interface StatisticsMapper {
             FROM submission WHERE problem_id=#{id}
             """)
     Map<String, Object> problemStats(Long id);
+
+    @Select(
+            """
+            <script>
+            SELECT problem_id,COUNT(*) AS submission_count,
+                   SUM(CASE WHEN verdict='ACCEPTED' THEN 1 ELSE 0 END) AS accepted_count
+            FROM submission WHERE problem_id IN
+            <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+            GROUP BY problem_id
+            </script>
+            """)
+    List<Map<String, Object>> problemStatsBatch(@Param("ids") List<Long> ids);
 }

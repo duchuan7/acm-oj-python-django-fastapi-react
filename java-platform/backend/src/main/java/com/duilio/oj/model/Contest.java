@@ -10,6 +10,7 @@ public class Contest {
     public String title;
     public String description;
     public String rule;
+    public String rankingPolicy;
     public java.time.Instant startAt;
     public java.time.Instant endAt;
     public Boolean isPublic;

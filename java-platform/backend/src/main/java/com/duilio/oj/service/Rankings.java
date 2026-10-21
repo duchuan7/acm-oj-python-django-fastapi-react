@@ -15,6 +15,7 @@ public final class Rankings {
             List<ContestProblem> links,
             UserMapper users) {
         Map<Long, Integer> weights = new HashMap<>();
+        boolean legacy = "LEGACY".equals(contest.rankingPolicy);
         for (var link : links) weights.put(link.problemId, link.score);
         Map<Long, List<Submission>> byUser = new LinkedHashMap<>();
         for (var s : submissions) byUser.computeIfAbsent(s.userId, k -> new ArrayList<>()).add(s);
@@ -48,13 +49,22 @@ public final class Rankings {
                                             .max(Comparator.comparingInt(s -> s.score))
                                             .orElseThrow();
                             int value =
-                                    best.score * weights.getOrDefault(best.problemId, 100) / 100;
+                                    legacy
+                                            ? best.score
+                                            : best.score
+                                                    * weights.getOrDefault(best.problemId, 100)
+                                                    / 100;
                             score += value;
                             if (value > 0) {
                                 solved++;
                                 penalty +=
                                         (int)
-                                                Duration.between(contest.startAt, best.submittedAt)
+                                                Duration.between(
+                                                                contest.startAt,
+                                                                legacy
+                                                                        ? group.getLast()
+                                                                                .submittedAt
+                                                                        : best.submittedAt)
                                                         .toMinutes();
                             }
                         }
@@ -65,14 +75,24 @@ public final class Rankings {
                     row.put("solved", solved);
                     row.put("score", score);
                     row.put("penalty_minutes", penalty);
+                    // The old API called this minutes value total_time_ms.
+                    row.put("total_time_ms", penalty);
                     rows.add(row);
                 });
         String primary = "IOI".equals(contest.rule) ? "score" : "solved";
-        rows.sort(
+        var order =
                 Comparator.<Map<String, Object>>comparingInt(
                                 r -> -((Number) r.get(primary)).intValue())
-                        .thenComparingInt(r -> ((Number) r.get("penalty_minutes")).intValue())
-                        .thenComparingLong(r -> ((Number) r.get("user_id")).longValue()));
+                        .thenComparingInt(r -> ((Number) r.get("penalty_minutes")).intValue());
+        if (legacy)
+            order =
+                    order.thenComparing(
+                            r ->
+                                    byUser.get(((Number) r.get("user_id")).longValue())
+                                            .getFirst()
+                                            .submittedAt);
+        else order = order.thenComparingLong(r -> ((Number) r.get("user_id")).longValue());
+        rows.sort(order);
         for (int i = 0; i < rows.size(); i++) rows.get(i).put("rank", i + 1);
         return rows;
     }

@@ -22,10 +22,14 @@ public class DockerSandbox {
             List<CaseResult> cases) {}
 
     private final String image;
+    private final String namespace;
     private final ProcessRunner runner = new ProcessRunner();
 
-    public DockerSandbox(@Value("${oj.judge-image}") String image) {
+    public DockerSandbox(
+            @Value("${oj.judge-image}") String image,
+            @Value("${oj.judge-namespace:duilio-oj-java}") String namespace) {
         this.image = image;
+        this.namespace = namespace;
     }
 
     private String docker(String... args) throws Exception {
@@ -69,7 +73,11 @@ public class DockerSandbox {
             throws Exception {
         var args =
                 new ArrayList<>(
-                        List.of("create", "--label=duilio.oj.sandbox=true", "--interactive"));
+                        List.of(
+                                "create",
+                                "--label=duilio.oj.sandbox=true",
+                                "--label=duilio.oj.namespace=" + namespace,
+                                "--interactive"));
         args.addAll(restrictions(memory));
         args.addAll(
                 List.of(
@@ -106,7 +114,12 @@ public class DockerSandbox {
                                                         + tests.size()
                                                                 * (problem.timeLimitMs + 12000L)))
                                 .toNanos();
-        docker("volume", "create", "--label=duilio.oj.job=true", volume);
+        docker(
+                "volume",
+                "create",
+                "--label=duilio.oj.job=true",
+                "--label=duilio.oj.namespace=" + namespace,
+                volume);
         try {
             String file =
                     switch (submission.language) {
