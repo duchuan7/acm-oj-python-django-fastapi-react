@@ -15,6 +15,7 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.*;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -38,6 +39,7 @@ import java.time.Instant;
         })
 @AutoConfigureMockMvc
 @Transactional
+@Import(SqlQueryCounter.class)
 class AuthorizationTest {
     @Autowired MockMvc mvc;
     @Autowired UserMapper users;
@@ -49,6 +51,7 @@ class AuthorizationTest {
     @Autowired ContestMapper contestRecords;
     @Autowired ContestParticipantMapper contestMembers;
     @Autowired com.duilio.oj.judge.JudgeJobs jobs;
+    @Autowired SqlQueryCounter.Counter sqlQueries;
     @MockitoBean StringRedisTemplate redis;
     @MockitoBean AbuseService abuse;
     private User admin, member, other;
@@ -248,6 +251,80 @@ class AuthorizationTest {
         s.submittedAt = Instant.now();
         submissions.insert(s);
         return s;
+    }
+
+    @Test
+    void problemListQueryCountDoesNotGrowWithPageSize() throws Exception {
+        for (int i = 0; i < 30; i++) problem("query-budget-" + i, true);
+        java.util.List<String> executed;
+        sqlQueries.start();
+        try {
+            mvc.perform(get("/api/problems"))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.count").value(31))
+                    .andExpect(jsonPath("$.results.length()").value(30));
+        } finally {
+            executed = sqlQueries.stop();
+        }
+        // Counts real prepared statements, including the existing contest publication check.
+        org.junit.jupiter.api.Assertions.assertEquals(4, executed.size(), executed.toString());
+    }
+
+    @Test
+    void problemListAggregatesSubmissionsWithoutRevealingHiddenProblems() throws Exception {
+        pendingSubmission();
+        var accepted = pendingSubmission();
+        accepted.verdict = "ACCEPTED";
+        submissions.updateById(accepted);
+        var privateAttempt = pendingSubmission();
+        privateAttempt.problemId = hidden.id;
+        submissions.updateById(privateAttempt);
+        mvc.perform(get("/api/problems"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(1))
+                .andExpect(jsonPath("$.results.length()").value(1))
+                .andExpect(jsonPath("$.results[0].id").value(pub.id))
+                .andExpect(jsonPath("$.results[0].submission_count").value(2))
+                .andExpect(jsonPath("$.results[0].accepted_count").value(1))
+                .andExpect(jsonPath("$.results[0].test_cases").doesNotExist());
+        mvc.perform(get("/api/problems").with(jwt().jwt(j -> j.subject(admin.id.toString()))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(2))
+                .andExpect(jsonPath("$.results[1].id").value(hidden.id))
+                .andExpect(jsonPath("$.results[1].submission_count").value(1))
+                .andExpect(jsonPath("$.results[1].accepted_count").value(0));
+    }
+
+    @Test
+    void problemListPreservesZeroSubmissionAndEmptyPageResponses() throws Exception {
+        mvc.perform(get("/api/problems").param("page", "-1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(1))
+                .andExpect(jsonPath("$.results[0].submission_count").value(0))
+                .andExpect(jsonPath("$.results[0].accepted_count").doesNotExist());
+        mvc.perform(get("/api/problems").param("page", "2"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(1))
+                .andExpect(jsonPath("$.results").isEmpty());
+    }
+
+    @Test
+    void problemListKeepsSearchAndDifficultyFilters() throws Exception {
+        pub.source = "Training source";
+        pub.difficulty = 1200;
+        problems.updateById(pub);
+        mvc.perform(
+                        get("/api/problems")
+                                .param("search", "Training")
+                                .param("difficulty_min", "1000")
+                                .param("difficulty_max", "1500"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(1))
+                .andExpect(jsonPath("$.results[0].id").value(pub.id));
+        mvc.perform(get("/api/problems").param("difficulty_min", "1500"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.count").value(0))
+                .andExpect(jsonPath("$.results").isEmpty());
     }
 
     @Test

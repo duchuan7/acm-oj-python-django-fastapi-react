@@ -1,0 +1,389 @@
+{
+  "project": "oj-sqlbench-c04dc3e351",
+  "started_at": "2026-10-21T05:52:07.567612+00:00",
+  "source_commit": "5ba1b3b2c849dff5534fca4eafaddf15cddfa5dd",
+  "checks": [
+    {
+      "name": "baseline and optimized API use identical JRE versions and runtime layers",
+      "passed": true
+    },
+    {
+      "name": "isolated resource ownership: mysql",
+      "passed": true
+    },
+    {
+      "name": "isolated resource ownership: redis",
+      "passed": true
+    },
+    {
+      "name": "isolated resource ownership: rabbit",
+      "passed": true
+    },
+    {
+      "name": "isolated resource ownership: before",
+      "passed": true
+    },
+    {
+      "name": "isolated resource ownership: after",
+      "passed": true
+    },
+    {
+      "name": "fixture is exactly 10000 synthetic problems and 100000 synthetic submissions",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: public first page",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: second page",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: later page",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: last partial page",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: empty page",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: negative page clamps to first",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: title search",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: source search",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: difficulty bounds",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: tag filter",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: tag containing whitespace",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: bound SQL input",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: member visibility",
+      "passed": true
+    },
+    {
+      "name": "identical full JSON: admin private problems",
+      "passed": true
+    },
+    {
+      "name": "submission statistics match independent Python fixture oracle",
+      "passed": true
+    },
+    {
+      "name": "public/member and administrator visibility counts are preserved",
+      "passed": true
+    },
+    {
+      "name": "MySQL general log: before page 1 executes 33 SELECTs (expected 33)",
+      "passed": true
+    },
+    {
+      "name": "MySQL general log: before page 9999 executes 3 SELECTs (expected 3)",
+      "passed": true
+    },
+    {
+      "name": "MySQL general log: after page 1 executes 4 SELECTs (expected 4)",
+      "passed": true
+    },
+    {
+      "name": "MySQL general log: after page 9999 executes 3 SELECTs (expected 3)",
+      "passed": true
+    },
+    {
+      "name": "general SQL logging is disabled before timing",
+      "passed": true
+    },
+    {
+      "name": "synthetic submissions remain unchanged throughout the read benchmark",
+      "passed": true
+    }
+  ],
+  "source_diff_sha256": "0d1ed644227ee1906e3bb6d57f1a862b64e8ea889711ce4ff84c7a818ab5dcf4",
+  "scope": "Synthetic data, warm caches, local Docker Linux. Not production traffic or a public capacity claim.",
+  "images": {
+    "baseline": "sha256:cbdfc11a992b623dceffdb51f71b6320befb8bc1b180c24a8e832beb1ee003c7",
+    "candidate_artifact": "sha256:2c2f982a8dcac490572134e1608c49fddde3696e9c4c2e4caf03a3ab1a531fdf",
+    "optimized_matched_runtime": "sha256:032fefc8d31c16d3b72b50c0df20a60fe448d31d151770fcfc6b0bdef6c9138c"
+  },
+  "java_runtime": "openjdk version \"21.0.12.1\" 2026-08-18 LTS\nOpenJDK Runtime Environment Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS)\nOpenJDK 64-Bit Server VM Temurin-21.0.12.1+1 (build 21.0.12.1+1-LTS, mixed mode, sharing)",
+  "docker": {
+    "ServerVersion": "29.4.3",
+    "OSType": "linux",
+    "NCPU": 20,
+    "MemTotal": 8184303616
+  },
+  "limits": {
+    "api_each": {
+      "cpus": 1,
+      "memory_mib": 768
+    },
+    "mysql": {
+      "cpus": 2,
+      "memory_mib": 1024
+    }
+  },
+  "dataset": {
+    "problems": 10000,
+    "submissions": 100000,
+    "public_problems": 9000,
+    "distribution": "25% of submissions target first 30 problems; multiples of 17 have zero submissions; multiples of 13 have no AC",
+    "origin": "deterministic generated fixtures; not real users or real judging activity",
+    "fixture_sql_sha256": "f10c062466d8d889f3133be7a75f86a207e36da497cd39abf4f13de018b1ab93"
+  },
+  "sql_queries": {
+    "before_page_1": {
+      "select_count": 33,
+      "by_purpose": {
+        "contest_publication_check": 1,
+        "page_count": 1,
+        "page_rows": 1,
+        "statistics": 30
+      }
+    },
+    "before_page_9999": {
+      "select_count": 3,
+      "by_purpose": {
+        "contest_publication_check": 1,
+        "page_count": 1,
+        "page_rows": 1
+      }
+    },
+    "after_page_1": {
+      "select_count": 4,
+      "by_purpose": {
+        "contest_publication_check": 1,
+        "page_count": 1,
+        "page_rows": 1,
+        "statistics": 1
+      }
+    },
+    "after_page_9999": {
+      "select_count": 3,
+      "by_purpose": {
+        "contest_publication_check": 1,
+        "page_count": 1,
+        "page_rows": 1
+      }
+    }
+  },
+  "explain_analyze": {
+    "before": "-> Aggregate: count(0), sum((case when (submission.verdict = 'ACCEPTED') then 1 else 0 end))  (cost=171 rows=1) (actual time=1.11..1.11 rows=1 loops=1)\\n    -> Covering index lookup on submission using submission_problem_verdict (problem_id=1)  (cost=87.3 rows=834) (actual time=0.95..1.02 rows=834 loops=1)\\n",
+    "after": "-> Group aggregate: count(0), sum((case when (submission.verdict = 'ACCEPTED') then 1 else 0 end))  (cost=6850 rows=7325) (actual time=0.457..5.43 rows=26 loops=1)\\n    -> Filter: (submission.problem_id in (1,2,3,4,5,6,7,8,9,11,12,13,14,15,16,17,18,19,21,22,23,24,25,26,27,28,29,31,32,33))  (cost=4600 rows=22504) (actual time=0.113..3.86 rows=22500 loops=1)\\n        -> Covering index range scan on submission using submission_problem_verdict over (problem_id = 1) OR (problem_id = 2) OR (28 more)  (cost=4600 rows=22504) (actual time=0.0527..2.67 rows=22500 loops=1)\\n"
+  },
+  "statistics_sql_examples": {
+    "before": "SELECT COUNT(*) AS submission_count,SUM(CASE WHEN verdict='ACCEPTED' THEN 1 ELSE 0 END) AS accepted_count\nFROM submission WHERE problem_id=1",
+    "after": "SELECT problem_id,COUNT(*) AS submission_count,\n       SUM(CASE WHEN verdict='ACCEPTED' THEN 1 ELSE 0 END) AS accepted_count\nFROM submission WHERE problem_id IN\n (  1 , 2 , 3 , 4 , 5 , 6 , 7 , 8 , 9 , 11 , 12 , 13 , 14 , 15 , 16 , 17 , 18 , 19 , 21 , 22 , 23 , 24 , 25 , 26 , 27 , 28 , 29 , 31 , 32 , 33 ) \nGROUP BY problem_id"
+  },
+  "http_timing": {
+    "1": {
+      "clients": 1,
+      "rounds": [
+        {
+          "round": 1,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 34.49,
+          "p95_ms": 66.6,
+          "elapsed_seconds": 2.745,
+          "requests_per_second": 29.14
+        },
+        {
+          "round": 1,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 18.88,
+          "p95_ms": 52.96,
+          "elapsed_seconds": 1.947,
+          "requests_per_second": 41.08
+        },
+        {
+          "round": 2,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 13.38,
+          "p95_ms": 36.81,
+          "elapsed_seconds": 1.492,
+          "requests_per_second": 53.61
+        },
+        {
+          "round": 2,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 23.94,
+          "p95_ms": 55.85,
+          "elapsed_seconds": 2.326,
+          "requests_per_second": 34.4
+        },
+        {
+          "round": 3,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 23.32,
+          "p95_ms": 57.87,
+          "elapsed_seconds": 2.25,
+          "requests_per_second": 35.56
+        },
+        {
+          "round": 3,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 12.43,
+          "p95_ms": 29.6,
+          "elapsed_seconds": 1.358,
+          "requests_per_second": 58.92
+        },
+        {
+          "round": 4,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 13.96,
+          "p95_ms": 31.78,
+          "elapsed_seconds": 1.397,
+          "requests_per_second": 57.26
+        },
+        {
+          "round": 4,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 19.76,
+          "p95_ms": 44.14,
+          "elapsed_seconds": 2.016,
+          "requests_per_second": 39.67
+        }
+      ],
+      "before": {
+        "requests": 320,
+        "p50_ms": 25.76,
+        "p95_ms": 54.85
+      },
+      "after": {
+        "requests": 320,
+        "p50_ms": 14.82,
+        "p95_ms": 37.25
+      },
+      "errors": 0
+    },
+    "8": {
+      "clients": 8,
+      "rounds": [
+        {
+          "round": 1,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 104.44,
+          "p95_ms": 313.27,
+          "elapsed_seconds": 1.476,
+          "requests_per_second": 54.21
+        },
+        {
+          "round": 1,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 20.45,
+          "p95_ms": 94.7,
+          "elapsed_seconds": 0.461,
+          "requests_per_second": 173.37
+        },
+        {
+          "round": 2,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 87.32,
+          "p95_ms": 124.84,
+          "elapsed_seconds": 0.803,
+          "requests_per_second": 99.68
+        },
+        {
+          "round": 2,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 104.28,
+          "p95_ms": 225.11,
+          "elapsed_seconds": 1.338,
+          "requests_per_second": 59.78
+        },
+        {
+          "round": 3,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 191.33,
+          "p95_ms": 297.3,
+          "elapsed_seconds": 1.796,
+          "requests_per_second": 44.55
+        },
+        {
+          "round": 3,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 49.57,
+          "p95_ms": 119.64,
+          "elapsed_seconds": 0.658,
+          "requests_per_second": 121.51
+        },
+        {
+          "round": 4,
+          "variant": "after",
+          "requests": 80,
+          "p50_ms": 112.82,
+          "p95_ms": 194.29,
+          "elapsed_seconds": 1.311,
+          "requests_per_second": 61.01
+        },
+        {
+          "round": 4,
+          "variant": "before",
+          "requests": 80,
+          "p50_ms": 112.68,
+          "p95_ms": 205.95,
+          "elapsed_seconds": 1.43,
+          "requests_per_second": 55.93
+        }
+      ],
+      "before": {
+        "requests": 320,
+        "p50_ms": 108.8,
+        "p95_ms": 289.7
+      },
+      "after": {
+        "requests": 320,
+        "p50_ms": 87.87,
+        "p95_ms": 179.61
+      },
+      "errors": 0
+    }
+  },
+  "timing_method": {
+    "warmup_requests_per_variant": 30,
+    "rounds": 4,
+    "requests_per_variant_per_round": 80,
+    "order": "alternating AB then BA",
+    "path": "/api/problems?page=1, anonymous",
+    "caches": "warmed JVM and MySQL; list endpoint does not use Redis cache",
+    "sql_logging_during_timing": false
+  },
+  "cleanup": "only owned containers and synthetic database volume removed; normal OJ untouched",
+  "success": true,
+  "finished_at": "2026-10-21T05:53:41.598481+00:00"
+}

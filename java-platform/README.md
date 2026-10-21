@@ -32,6 +32,7 @@ Linux 使用 bash scripts/setup.sh 初始化配置，Compose 命令相同。
 
 ## 文档
 
+- [题目列表 SQL 优化与实测对比](docs/SQL-OPTIMIZATION.md)
 - [四阶段交付状态与验证边界](docs/DELIVERY.md)
 - [真实旧数据的自动演练](operations/README.md)
 - [正式切换顺序与回退边界](docs/ROLLOUT.md)
